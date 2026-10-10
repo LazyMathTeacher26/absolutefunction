@@ -9,12 +9,12 @@ st.set_page_config(
 )
 
 st.title("Interactive Absolute Value Explorer")
-st.write("Change the equation and viewing window to explore the graph.")
+st.write("Change the equation and graph ranges to explore the function.")
 
 st.latex(r"y = a|x-h|+k")
 
 # ---------------------------------
-# FUNCTION PARAMETERS
+# 1. FUNCTION PARAMETERS
 # ---------------------------------
 st.subheader("1. Change the equation")
 
@@ -48,10 +48,11 @@ with c4:
         step=1.0
     )
 
+# Calculate y for the selected x
 y = a * abs(x - h) + k
 
 # ---------------------------------
-# DYNAMIC AXIS RANGES
+# 2. DYNAMIC VIEWING RANGES
 # ---------------------------------
 st.subheader("2. Adjust the graph window")
 
@@ -91,7 +92,7 @@ with r2:
         key="ymax"
     )
 
-# Validate ranges
+# Validate viewing ranges
 if x_min >= x_max:
     st.error("Minimum x must be less than maximum x.")
     st.stop()
@@ -101,7 +102,7 @@ if y_min >= y_max:
     st.stop()
 
 # ---------------------------------
-# GENERATE GRAPH
+# 3. GENERATE GRAPH
 # ---------------------------------
 xs = np.linspace(x_min, x_max, 1200)
 ys = a * np.abs(xs - h) + k
@@ -112,7 +113,7 @@ fig, ax = plt.subplots(figsize=(11, 7))
 fig.patch.set_facecolor("#202124")
 ax.set_facecolor("#202124")
 
-# Function
+# Plot absolute value function
 ax.plot(
     xs,
     ys,
@@ -123,22 +124,22 @@ ax.plot(
 
 # White coordinate axes
 ax.axhline(
-    0,
+    y=0,
     color="white",
     linewidth=1.8,
     zorder=2
 )
 
 ax.axvline(
-    0,
+    x=0,
     color="white",
     linewidth=1.8,
     zorder=2
 )
 
-# GREEN DOTTED LINE OF SYMMETRY: x = h
+# Green dotted line of symmetry: x = h
 ax.axvline(
-    h,
+    x=h,
     color="lime",
     linestyle=":",
     linewidth=2.5,
@@ -156,7 +157,7 @@ ax.scatter(
     label=f"Vertex ({h:g}, {k:g})"
 )
 
-# Current input point
+# Selected input point
 ax.scatter(
     x,
     y,
@@ -168,7 +169,7 @@ ax.scatter(
     label=f"Point ({x:g}, {y:g})"
 )
 
-# Dashed guide lines to locate the point
+# Dashed guide lines for selected point
 ax.plot(
     [x, x],
     [0, y],
@@ -185,51 +186,58 @@ ax.plot(
     alpha=0.8
 )
 
-# Dynamic viewing limits
+# ---------------------------------
+# 4. AXIS LIMITS AND TICK INTERVALS
+# ---------------------------------
 ax.set_xlim(x_min, x_max)
 ax.set_ylim(y_min, y_max)
 
-# Choose readable tick intervals dynamically
-def choose_step(span):
-    rough_step = span / 10
-    magnitude = 10 ** np.floor(np.log10(rough_step))
-    normalized = rough_step / magnitude
+# Tick interval is ALWAYS exactly 1 unit
+ax.set_xticks(
+    np.arange(
+        np.ceil(x_min),
+        np.floor(x_max) + 1,
+        1
+    )
+)
 
-    if normalized <= 1:
-        nice = 1
-    elif normalized <= 2:
-        nice = 2
-    elif normalized <= 5:
-        nice = 5
-    else:
-        nice = 10
+ax.set_yticks(
+    np.arange(
+        np.ceil(y_min),
+        np.floor(y_max) + 1,
+        1
+    )
+)
 
-    return nice * magnitude
+# White tick labels and grid
+ax.tick_params(
+    axis="both",
+    colors="white",
+    labelsize=9
+)
 
-x_step = choose_step(x_max - x_min)
-y_step = choose_step(y_max - y_min)
+ax.grid(
+    True,
+    color="white",
+    alpha=0.18
+)
 
-ax.set_xticks(np.arange(
-    np.ceil(x_min / x_step) * x_step,
-    x_max + x_step * 0.01,
-    x_step
-))
-
-ax.set_yticks(np.arange(
-    np.ceil(y_min / y_step) * y_step,
-    y_max + y_step * 0.01,
-    y_step
-))
-
-# White tick labels, grid, borders and axis labels
-ax.tick_params(colors="white", labelsize=9)
-ax.grid(True, color="white", alpha=0.18)
-
+# White graph borders
 for spine in ax.spines.values():
     spine.set_color("white")
 
-ax.set_xlabel("x-axis", color="white", fontsize=12)
-ax.set_ylabel("y-axis", color="white", fontsize=12)
+# Axis labels
+ax.set_xlabel(
+    "x-axis",
+    color="white",
+    fontsize=12
+)
+
+ax.set_ylabel(
+    "y-axis",
+    color="white",
+    fontsize=12
+)
 
 ax.set_title(
     "Absolute Value Function",
@@ -246,11 +254,12 @@ for text in legend.get_texts():
     text.set_color("white")
 
 fig.tight_layout()
+
 st.pyplot(fig)
 plt.close(fig)
 
 # ---------------------------------
-# CALCULATIONS
+# 5. STEP-BY-STEP CALCULATIONS
 # ---------------------------------
 st.subheader("3. Explore the mathematics")
 
@@ -262,20 +271,39 @@ st.latex(
     rf"y={a:g}|{x:g}-({h:g})|+({k:g})"
 )
 
-st.markdown("**Result**")
+st.markdown("**Calculate the answer**")
 st.latex(rf"y={y:g}")
 
+# Display important properties
 m1, m2, m3 = st.columns(3)
 
-m1.metric("Vertex", f"({h:g}, {k:g})")
-m2.metric("Selected point", f"({x:g}, {y:g})")
-m3.metric("Axis of symmetry", f"x = {h:g}")
+m1.metric(
+    "Vertex",
+    f"({h:g}, {k:g})"
+)
 
+m2.metric(
+    "Selected point",
+    f"({x:g}, {y:g})"
+)
+
+m3.metric(
+    "Axis of symmetry",
+    f"x = {h:g}"
+)
+
+# Opening direction and range
 if a > 0:
-    st.success(f"Opens upward. Range: y ≥ {k:g}")
+    st.success(
+        f"The graph opens upward. Range: y ≥ {k:g}"
+    )
 elif a < 0:
-    st.info(f"Opens downward. Range: y ≤ {k:g}")
+    st.info(
+        f"The graph opens downward. Range: y ≤ {k:g}"
+    )
 else:
-    st.info(f"Horizontal line. Range: y = {k:g}")
+    st.info(
+        f"The graph is a horizontal line. Range: y = {k:g}"
+    )
 
 st.write("**Domain:** all real numbers.")
