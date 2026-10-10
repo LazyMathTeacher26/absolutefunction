@@ -9,14 +9,28 @@ st.set_page_config(
 )
 
 st.title("Interactive Absolute Value Explorer")
+
 st.write("Change the equation and graph ranges to explore the function.")
+
+st.markdown("**Shirhan A. Biottong**")
+
+st.markdown("*Algebra 1* Teacher")
+
+st.markdown(
+
+    "<small>Atlantic Coast High School</small>",
+
+    unsafe_allow_html=True
+
+)
+
 
 st.latex(r"y = a|x-h|+k")
 
 # ---------------------------------
 # 1. FUNCTION PARAMETERS
 # ---------------------------------
-st.subheader("1. Change the equation")
+st.subheader("1. Change the value to see dynamic changes in the graph")
 
 c1, c2, c3, c4 = st.columns(4)
 
