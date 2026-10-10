@@ -12,19 +12,15 @@ st.title("Interactive Absolute Value Explorer")
 
 st.write("Explore Absolute Value Function Intuitively")
 
-st.markdown(""
+st.markdown(
+    '<div style="text-align:right; line-height:1.0;">'
+    '<div><strong>Shirhan A. Biottong</strong></div>'
+    '<div><em>Algebra 1</em> Teacher</div>'
+    '<div style="font-size:0.75em;">Atlantic Coast High School</div>'
+    '</div>',
+    unsafe_allow_html=True
+)
 
-<div style="text-align: right; line-height: 1.0;">
-
-    <strong>Shirhan A. Biottong</strong><br>
-
-    <em>Algebra 1</em> Teacher<br>
-
-    <small>Atlantic Coast High School</small>
-
-</div>
-
-"", unsafe_allow_html=True)
 
 
 st.latex(r"y = a|x-h|+k")
