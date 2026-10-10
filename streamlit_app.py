@@ -10,18 +10,13 @@ st.set_page_config(
 
 st.title("Interactive Absolute Value Explorer")
 
-st.write("Change the equation and graph ranges to explore the function.")
+st.write("Explore Absolute Value Function Intuitively")
 
 st.markdown("**Shirhan A. Biottong**")
-
 st.markdown("*Algebra 1* Teacher")
-
 st.markdown(
-
     "<small>Atlantic Coast High School</small>",
-
     unsafe_allow_html=True
-
 )
 
 
