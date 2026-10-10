@@ -12,9 +12,9 @@ st.title("Interactive Absolute Value Explorer")
 
 st.write("Explore Absolute Value Function Intuitively")
 
-st.markdown("""
+st.markdown(""
 
-<div style="text-align: right; line-height: 1.2;">
+<div style="text-align: right; line-height: 1.0;">
 
     <strong>Shirhan A. Biottong</strong><br>
 
@@ -24,7 +24,7 @@ st.markdown("""
 
 </div>
 
-""", unsafe_allow_html=True)
+"", unsafe_allow_html=True)
 
 
 st.latex(r"y = a|x-h|+k")
