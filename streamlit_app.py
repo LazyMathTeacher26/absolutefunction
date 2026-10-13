@@ -2,6 +2,7 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
+import sympy as sp
 
 st.set_page_config(
     page_title="Absolute Value Explorer",
