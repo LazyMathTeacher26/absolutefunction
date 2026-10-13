@@ -126,7 +126,6 @@ expr = sp.simplify(expr)
 # ---------------------------------------------------------
 graph_col, math_col = st.columns([1.8, 1], gap="small")
 with graph_col:
-    st.latex(r"y=a|x-h|+k")
     xs = np.linspace(x_min, x_max, 1000)
     ys = a * np.abs(xs - h) + k
 
@@ -160,12 +159,7 @@ with graph_col:
     fig.tight_layout(pad=0.7)
     st.pyplot(fig, use_container_width=True)
     plt.close(fig)
-
-
-
-# Move the mathematics panel down by 10px
-
-
+    st.latex(r"y=a|x-h|+k")
 
 # Move the mathematics panel down by 10px
 st.markdown("""
