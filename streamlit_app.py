@@ -13,246 +13,261 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ---------------------------------------------------------
-# COMPACT PAGE STYLE + TOP HEADING
-# ---------------------------------------------------------
 
 # ---------------------------------------------------------
-# PREMIUM PAGE STYLE + TOP HEADING
+# ATLANTIC COAST HIGH SCHOOL — STINGRAY THEME
 # ---------------------------------------------------------
 st.markdown("""
 <style>
-/* Premium dark navy background */
+/* Main Atlantic Coast-inspired color palette */
+:root {
+    --aco-navy: #071629;
+    --aco-deep-blue: #0B2342;
+    --aco-blue: #1267A5;
+    --aco-cyan: #48C7E8;
+    --aco-white: #F4F8FC;
+    --aco-muted: #A9BCD2;
+    --aco-border: #294565;
+}
+
+/* Main application background */
 .stApp {
     background:
-        radial-gradient(ellipse at 8% 0%, rgba(37, 99, 235, 0.18), transparent 38%),
-        linear-gradient(145deg, #080F1D 0%, #101A2D 55%, #0B1220 100%);
-    color: #F1F5F9;
+        radial-gradient(ellipse at top right,
+            rgba(18, 103, 165, 0.22), transparent 42%),
+        linear-gradient(145deg, #071629 0%, #0B1E36 55%, #102C4B 100%);
+    color: var(--aco-white);
 }
 
-/* Main content layout */
-.stAppViewBlockContainer,
+/* Main content spacing */
 .block-container {
-    max-width: 1600px;
-    padding-top: 0.65rem !important;
-    padding-bottom: 1.2rem !important;
-}
-
-/* Keep Streamlit controls usable */
-header[data-testid="stHeader"] {
-    background: transparent;
-    height: 2.5rem;
-}
-
-/* Typography */
-h1, h2, h3 {
-    color: #F8FAFC !important;
-    letter-spacing: -0.025em;
-    font-weight: 750 !important;
-    margin-top: 0.15rem !important;
-    margin-bottom: 0.4rem !important;
-}
-
-p {
-    color: #CBD5E1;
-    margin-bottom: 0.4rem !important;
-}
-
-/* Balanced vertical spacing */
-div[data-testid="stVerticalBlock"] {
-    gap: 0.65rem;
-}
-
-/* Dividers */
-hr {
-    border-color: rgba(148, 163, 184, 0.22) !important;
-    margin-top: 0.4rem !important;
-    margin-bottom: 0.4rem !important;
+    max-width: 1500px;
+    padding-top: 1rem !important;
+    padding-bottom: 1.5rem !important;
 }
 
 /* Sidebar */
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #111D32 0%, #0B1220 100%);
-    border-right: 1px solid rgba(148, 163, 184, 0.16);
+    background: linear-gradient(180deg, #071629, #102B49);
+    border-right: 1px solid var(--aco-border);
 }
 
-section[data-testid="stSidebar"] h2,
-section[data-testid="stSidebar"] h3 {
-    color: #93C5FD !important;
+section[data-testid="stSidebar"] * {
+    color: var(--aco-white);
 }
 
-/* Sidebar labels */
-section[data-testid="stSidebar"] label,
-section[data-testid="stSidebar"] .stCaption {
-    color: #CBD5E1 !important;
+/* Typography */
+h1, h2, h3, h4 {
+    color: var(--aco-white) !important;
+    font-weight: 750 !important;
+    letter-spacing: -0.025em;
 }
 
-/* Inputs */
+p, label, .stMarkdown, .stCaption {
+    color: #D6E2EF;
+}
+
+/* Links */
+a {
+    color: var(--aco-cyan) !important;
+}
+
+/* Input labels */
+div[data-testid="stWidgetLabel"] p {
+    color: #C7D7E8 !important;
+    font-weight: 600;
+}
+
+/* Number inputs, text inputs, and select boxes */
 .stNumberInput input,
 .stTextInput input,
-.stSelectbox div[data-baseweb="select"] {
-    border-radius: 10px;
+.stSelectbox div[data-baseweb="select"],
+.stMultiSelect div[data-baseweb="select"] {
+    background-color: #F4F8FC !important;
+    color: #10243A !important;
+    border-radius: 10px !important;
 }
 
 /* Buttons */
 .stButton > button,
 .stFormSubmitButton > button {
-    min-height: 2.65rem;
+    background: linear-gradient(110deg, #1267A5, #1688C2);
+    color: #FFFFFF !important;
+    border: 1px solid #48C7E8;
     border-radius: 12px;
-    font-weight: 650;
-    border: 1px solid rgba(96, 165, 250, 0.38);
-    transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.stButton > button[kind="primary"],
-.stFormSubmitButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #2563EB, #0891B2);
-    color: #FFFFFF;
-    border: none;
-    box-shadow: 0 5px 18px rgba(37, 99, 235, 0.22);
+    font-weight: 700;
+    min-height: 42px;
+    transition: all 0.2s ease;
 }
 
 .stButton > button:hover,
 .stFormSubmitButton > button:hover {
-    border-color: #38BDF8;
+    background: linear-gradient(110deg, #1688C2, #48C7E8);
+    color: #071629 !important;
+    border-color: #FFFFFF;
     transform: translateY(-1px);
 }
 
-/* Metrics */
+/* Radio buttons and checkboxes */
+div[data-testid="stRadio"] label,
+div[data-testid="stCheckbox"] label {
+    color: var(--aco-white) !important;
+}
+
+/* Dividers */
+hr {
+    border-color: var(--aco-border) !important;
+    opacity: 0.9;
+}
+
+/* Metric cards */
 div[data-testid="stMetric"] {
-    background: rgba(30, 48, 75, 0.72);
-    border: 1px solid rgba(148, 163, 184, 0.17);
-    border-radius: 14px;
-    padding: 14px;
+    background: linear-gradient(145deg, #152E4B, #1A3656);
+    border: 1px solid #294565;
+    border-radius: 16px;
+    padding: 16px;
 }
 
 div[data-testid="stMetricLabel"] {
-    color: #94A3B8 !important;
+    color: #B8CBE0 !important;
 }
 
 div[data-testid="stMetricValue"] {
-    color: #7DD3FC !important;
-    font-weight: 750;
+    color: #FFFFFF !important;
+    font-weight: 800;
 }
 
-/* Feedback and status messages */
-div[data-testid="stAlert"] {
-    border-radius: 12px;
+/* Progress bars */
+div[data-testid="stProgress"] > div {
+    background-color: #233C59;
+    border-radius: 99px;
+}
+
+div[data-testid="stProgress"] > div > div {
+    background: linear-gradient(90deg, #1688C2, #48C7E8);
+    border-radius: 99px;
 }
 
 /* Expanders */
 div[data-testid="stExpander"] {
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(17, 43, 71, 0.8);
+    border: 1px solid var(--aco-border);
     border-radius: 14px;
-    overflow: hidden;
+}
+
+/* Alerts and information panels */
+div[data-testid="stAlert"] {
+    border-radius: 12px;
 }
 
 /* Game cards */
 .game-card {
-    background: linear-gradient(
-        135deg,
-        rgba(30, 58, 95, 0.88),
-        rgba(15, 27, 47, 0.96)
-    );
-    border: 1px solid rgba(96, 165, 250, 0.30);
-    border-radius: 18px;
+    background: linear-gradient(145deg,
+        rgba(22, 49, 79, 0.96),
+        rgba(12, 32, 55, 0.96));
+    border: 1px solid #315579;
+    border-left: 4px solid #48C7E8;
+    border-radius: 16px;
     padding: 20px;
-    margin: 8px 0 14px 0;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
+    margin: 12px 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
 }
 
 .small-muted {
-    color: #94A3B8;
+    color: #A9BCD2;
     font-size: 0.85rem;
 }
 
-/* Progress bars */
-div[data-testid="stProgress"] > div > div {
-    background: linear-gradient(90deg, #38BDF8, #34D399);
+/* Mathematical expressions */
+div[data-testid="stLatex"] {
+    color: #FFFFFF;
 }
 
-/* Plot spacing */
-div[data-testid="stImage"] {
-    margin-bottom: 0 !important;
+/* Graph containers */
+div[data-testid="stImage"],
+div[data-testid="stPlotlyChart"] {
+    border-radius: 12px;
 }
 
-/* Equations and markdown */
-div[data-testid="stMarkdownContainer"] {
-    line-height: 1.5;
-}
-
-.stMarkdown p {
-    margin-bottom: 0.4rem !important;
-}
-
-/* Responsive spacing for phones and smaller tablets */
-@media (max-width: 700px) {
-    .stAppViewBlockContainer,
+/* Mobile and iPad adjustments */
+@media (max-width: 768px) {
     .block-container {
-        padding-left: 0.75rem !important;
-        padding-right: 0.75rem !important;
-    }
-
-    div[data-testid="stVerticalBlock"] {
-        gap: 0.5rem;
+        padding-left: 0.8rem !important;
+        padding-right: 0.8rem !important;
     }
 
     .game-card {
-        padding: 15px;
-        border-radius: 14px;
+        padding: 14px;
     }
 }
 </style>
 """, unsafe_allow_html=True)
 
+
 # ---------------------------------------------------------
-# TOP HEADING + TEACHER ATTRIBUTION
+# STINGRAY BRANDED HEADER
 # ---------------------------------------------------------
 st.markdown("""
 <div style="
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    gap:12px;
-    width:100%;
-    margin:0 0 8px 0;
-    padding:8px 0;
+    justify-content:space-between;
+    gap:14px;
+    padding:16px 20px;
+    margin-bottom:12px;
+    border:1px solid #294565;
+    border-radius:18px;
+    background:linear-gradient(115deg,
+        rgba(11,35,66,0.98),
+        rgba(18,103,165,0.42));
+    box-shadow:0 8px 24px rgba(0,0,0,0.15);
 ">
-  <div style="flex:1 1 auto; min-width:0;">
-    <div style="
-        font-size:clamp(1.15rem, 2.2vw, 1.65rem);
-        font-weight:750;
-        line-height:1.2;
-        color:#F8FAFC;
-        letter-spacing:-0.025em;
-    ">
-      📐 Interactive Absolute Value Explorer
+    <div style="min-width:0;">
+        <div style="
+            font-size:clamp(1.25rem, 3vw, 2rem);
+            font-weight:850;
+            line-height:1.15;
+            color:#FFFFFF;
+        ">
+            📐 Interactive Absolute Value Explorer
+        </div>
+        <div style="
+            color:#BBD9EF;
+            font-size:0.9rem;
+            margin-top:6px;
+        ">
+            Explore • Graph • Discover • Master
+        </div>
+        <div style="
+            display:inline-block;
+            margin-top:10px;
+            padding:5px 10px;
+            border:1px solid #48C7E8;
+            border-radius:20px;
+            color:#8FE7FA;
+            font-size:0.75rem;
+            font-weight:750;
+            letter-spacing:0.08em;
+        ">
+            🌊 ATLANTIC COAST • STINGRAYS
+        </div>
     </div>
     <div style="
-        font-size:0.85rem;
-        color:#94A3B8;
-        margin-top:5px;
+        flex:0 0 auto;
+        text-align:right;
+        color:#FFFFFF;
+        font-size:0.82rem;
+        line-height:1.5;
     ">
-      Explore, experiment, and master absolute value functions.
+        <strong>Shirhan A. Biottong</strong><br>
+        <em>Algebra 1 Teacher</em><br>
+        <span style="font-size:0.7rem;color:#BBD9EF;">
+            Atlantic Coast High School
+        </span>
     </div>
-  </div>
-  <div style="
-      flex:0 0 auto;
-      text-align:right;
-      line-height:1.4;
-      font-size:0.78rem;
-      color:#E2E8F0;
-  ">
-    <strong>Shirhan A. Biottong</strong><br>
-    <em>Algebra 1 Teacher</em><br>
-    <span style="font-size:0.65rem;color:#94A3B8;">
-      Atlantic Coast High School
-    </span>
-  </div>
 </div>
 """, unsafe_allow_html=True)
 
-    
 
 # ---------------------------------------------------------
 # SIDEBAR: INTERACTIVE FUNCTION CONTROLS
