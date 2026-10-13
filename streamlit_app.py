@@ -162,23 +162,17 @@ with graph_col:
     plt.close(fig)
 
 
-with math_col:
 
-	st.markdown("""
-
+# Move the mathematics panel down by 10px
+st.markdown("""
 <style>
-
-/* Move the entire mathematics panel down by 10px */
-
 div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
-
     padding-top: 10px !important;
-
 }
-
 </style>
-
 """, unsafe_allow_html=True)
+
+with math_col:
     st.markdown(
         "<div style='font-size:1rem;font-weight:700;line-height:1.2;margin:0 0 4px 0;'>"
         "3. Explore the Mathematics</div>",
@@ -191,7 +185,7 @@ div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
     st.markdown("<hr style='margin:3px 0;'>", unsafe_allow_html=True)
 
     st.markdown("**Substitution**")
-    st.latex(rf"y={a:g}\left|{x:g}-({h:g})\right|+({k:g})")
+    st.latex(rf"y={a:g}\\left|{x:g}-({h:g})\\right|+({k:g})")
 
     st.markdown("**Calculated y-value**")
     st.latex(rf"y={y:g}")
