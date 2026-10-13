@@ -160,7 +160,6 @@ with graph_col:
     plt.close(fig)
 
 with math_col:
-	st.markdown("""
     st.markdown("**3. Explore the Mathematics**")
     st.markdown("**Simplified Equation**")
     st.latex(rf"y={sp.latex(expr)}")
