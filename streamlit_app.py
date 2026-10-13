@@ -15,7 +15,7 @@ st.write("Explore Absolute Value Function Intuitively")
 st.markdown(
     '<div style="text-align:right; line-height:1.0;">'
     '<div><strong>Shirhan A. Biottong</strong></div>'
-    '<div><em>Algebra 1</em> Teacher</div>'
+    '<div><em>Algebra 1 Teacher</em></div>'
     '<div style="font-size:0.75em;">Atlantic Coast High School</div>'
     '</div>',
     unsafe_allow_html=True
