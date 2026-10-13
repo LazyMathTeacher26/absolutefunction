@@ -85,11 +85,12 @@ st.markdown("""
   </div>
 </div>
 """, unsafe_allow_html=True)
-    st.divider()
+    
 
 # ---------------------------------------------------------
 # SIDEBAR: INTERACTIVE FUNCTION CONTROLS
 # ---------------------------------------------------------
+st.divider()
 with st.sidebar:
     st.subheader("1. Function Parameters")
     a = st.number_input("a (stretch/flip)", value=1.0, step=0.5)
@@ -194,7 +195,7 @@ with math_col:
         f"Domain: all real numbers.</div>",
         unsafe_allow_html=True,
     )
- st.divider()
+st.divider()
 # ---------------------------------------------------------
 # GAME STATE
 # ---------------------------------------------------------
