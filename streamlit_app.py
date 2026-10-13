@@ -206,57 +206,52 @@ with math_col:
 
 
 
+
 # --------------------------------------------
-# 6. RANDOM ABSOLUTE VALUE GAME
-# Independent of the sidebar function controls
+# 6. RANDOM ABSOLUTE VALUE SPEED CHALLENGE
+# 10 questions | 60 seconds per question
 # --------------------------------------------
 
 import random
 import time
-import sympy as sp
 import streamlit as st
+import sympy as sp
 
 st.markdown("---")
 st.subheader("🎮 Absolute Value Speed Challenge")
+
 st.caption(
-    "10 random functions • 15 seconds per question • "
-    "Solve on paper, then enter your answers!"
+    "10 random functions • 60 seconds per question • "
+    "Solve using pen and paper!"
 )
 
 # --------------------------------------------
-# GAME INITIALIZATION
+# INITIALIZE GAME STATE
 # --------------------------------------------
 
-if "av_game_started" not in st.session_state:
-    st.session_state.av_game_started = False
+defaults = {
+    "av_game_started": False,
+    "av_game_questions": [],
+    "av_game_index": 0,
+    "av_game_score": 0,
+    "av_game_deadline": 0.0,
+    "av_game_status": "waiting",
+    "av_game_results": [],
+}
 
-if "av_game_questions" not in st.session_state:
-    st.session_state.av_game_questions = []
+for key, value in defaults.items():
+    if key not in st.session_state:
+        st.session_state[key] = value
 
-if "av_game_index" not in st.session_state:
-    st.session_state.av_game_index = 0
-
-if "av_game_score" not in st.session_state:
-    st.session_state.av_game_score = 0
-
-if "av_game_deadline" not in st.session_state:
-    st.session_state.av_game_deadline = 0.0
-
-if "av_game_status" not in st.session_state:
-    st.session_state.av_game_status = "waiting"
-
-if "av_game_results" not in st.session_state:
-    st.session_state.av_game_results = []
 
 # --------------------------------------------
-# GENERATE 10 RANDOM QUESTIONS
+# GENERATE 10 RANDOM FUNCTIONS
 # --------------------------------------------
 
 def generate_av_questions():
     questions = []
 
     for _ in range(10):
-        # Nonzero a creates upward or downward V-shapes
         a = random.choice([-3, -2, -1, 1, 2, 3])
         h = random.randint(-5, 5)
         k = random.randint(-5, 5)
@@ -264,13 +259,10 @@ def generate_av_questions():
 
         y = a * abs(x - h) + k
 
-        # Create a simplified symbolic equation
         X = sp.Symbol("x")
         expression = sp.simplify(
             a * sp.Abs(X - h) + k
         )
-
-        opening = "Upward" if a > 0 else "Downward"
 
         questions.append({
             "a": a,
@@ -278,44 +270,42 @@ def generate_av_questions():
             "k": k,
             "x": x,
             "y": y,
-            "opening": opening,
-            "equation": sp.latex(expression)
+            "opening": "Upward" if a > 0 else "Downward",
+            "equation": sp.latex(expression),
         })
 
     return questions
 
 
 # --------------------------------------------
-# START / RESTART GAME
+# START GAME
 # --------------------------------------------
 
 if not st.session_state.av_game_started:
-    st.markdown("### Ready, Math Detective?")
+    st.markdown("### 🕵️ Ready, Math Detective?")
+
     st.write("Each question is worth 20 points:")
-    st.write("- 10 points for the correct y-value.")
-    st.write("- 10 points for the correct opening direction.")
-    st.write("You have 15 seconds for each question.")
+    st.write("• 10 points for the correct y-value")
+    st.write("• 10 points for the correct opening direction")
+    st.write("⏱️ You have 1 minute (60 seconds) per question.")
 
     if st.button(
         "🚀 Start Game",
         key="av_start_game",
         use_container_width=True
     ):
-        st.session_state.av_game_questions = (
-            generate_av_questions()
-        )
+        st.session_state.av_game_questions = generate_av_questions()
         st.session_state.av_game_index = 0
         st.session_state.av_game_score = 0
         st.session_state.av_game_results = []
         st.session_state.av_game_status = "playing"
-        st.session_state.av_game_deadline = time.time() + 15
+        st.session_state.av_game_deadline = time.time() + 60
         st.session_state.av_game_started = True
         st.rerun()
 
+
 # --------------------------------------------
-# ACTIVE GAME WITH LIVE TIMER
-# Requires a recent Streamlit version supporting
-# st.fragment(run_every="1s")
+# GAME INTERFACE AND LIVE COUNTDOWN
 # --------------------------------------------
 
 @st.fragment(run_every="1s")
@@ -328,31 +318,27 @@ def render_av_game():
     index = st.session_state.av_game_index
 
     # ----------------------------------------
-    # GAME COMPLETE
+    # GAME COMPLETION
     # ----------------------------------------
+
     if index >= 10:
         st.success("🏁 Game complete!")
 
-        st.metric(
-            "Final Score",
-            f"{st.session_state.av_game_score} / 200"
-        )
+        score = st.session_state.av_game_score
+        st.metric("Final Score", f"{score} / 200")
 
-        percentage = (
-            st.session_state.av_game_score / 200
-        ) * 100
-
-        st.write(f"Accuracy score: {percentage:.0f}%")
+        percentage = score / 200 * 100
+        st.write(f"Final percentage: {percentage:.0f}%")
 
         if percentage >= 90:
             st.balloons()
-            st.write("🏆 Outstanding! You're an Absolute Value Master!")
+            st.write("🏆 Outstanding! Absolute Value Master!")
         elif percentage >= 70:
-            st.write("👏 Great work! Keep practicing!")
+            st.write("👏 Great work!")
         else:
-            st.write("💪 Keep practicing. You can improve!")
+            st.write("💪 Keep practicing!")
 
-        with st.expander("Review all 10 questions"):
+        with st.expander("📘 Review all 10 questions"):
             for i, result in enumerate(
                 st.session_state.av_game_results, start=1
             ):
@@ -360,12 +346,15 @@ def render_av_game():
                 st.latex(
                     rf"y={sp.latex(result['expression'])}"
                 )
-                st.write(f"x = {result['x']}")
+                st.write(f"Given x: {result['x']}")
                 st.write(f"Correct y-value: {result['y']}")
-                st.write(f"Opening: {result['opening']}")
+                st.write(f"Correct opening: {result['opening']}")
                 st.write(f"Your y-answer: {result['student_y']}")
-                st.write(f"Your opening answer: {result['student_opening']}")
-                st.write(f"Points earned: {result['points']}")
+                st.write(
+                    f"Your opening answer: "
+                    f"{result['student_opening']}"
+                )
+                st.write(f"Points earned: {result['points']} / 20")
                 st.divider()
 
         if st.button(
@@ -373,14 +362,12 @@ def render_av_game():
             key="av_play_again",
             use_container_width=True
         ):
-            st.session_state.av_game_questions = (
-                generate_av_questions()
-            )
+            st.session_state.av_game_questions = generate_av_questions()
             st.session_state.av_game_index = 0
             st.session_state.av_game_score = 0
             st.session_state.av_game_results = []
             st.session_state.av_game_status = "playing"
-            st.session_state.av_game_deadline = time.time() + 15
+            st.session_state.av_game_deadline = time.time() + 60
             st.rerun()
 
         return
@@ -390,10 +377,12 @@ def render_av_game():
     # ----------------------------------------
     # TIMER
     # ----------------------------------------
+
     remaining = max(
         0,
         int(
-            st.session_state.av_game_deadline - time.time()
+            st.session_state.av_game_deadline
+            - time.time()
             + 0.999
         )
     )
@@ -406,38 +395,36 @@ def render_av_game():
         st.rerun()
 
     # ----------------------------------------
-    # PROGRESS AND SCORE
+    # PROGRESS, TIME, SCORE
     # ----------------------------------------
-    header1, header2, header3 = st.columns(3)
 
-    header1.metric("Question", f"{index + 1} / 10")
-    header2.metric("Time Left", f"{remaining} sec")
-    header3.metric("Score", st.session_state.av_game_score)
+    c1, c2, c3 = st.columns(3)
+
+    c1.metric("Question", f"{index + 1} / 10")
+    c2.metric("Time Left", f"{remaining} sec")
+    c3.metric("Score", st.session_state.av_game_score)
 
     st.progress((index + 1) / 10)
 
     # ----------------------------------------
-    # QUESTION
+    # RANDOM QUESTION
     # ----------------------------------------
+
     st.markdown(f"### ✏️ Question {index + 1}")
+    st.write("Calculate y and identify the graph's opening.")
 
-    st.markdown("**Find the y-value and identify the opening.**")
-
-    # Equation is independent of the sidebar controls
     st.latex(rf"y={q['equation']}")
-
-    st.markdown(
-        f"**Given:** x = {q['x']}"
-    )
+    st.markdown(f"**Given:** x = {q['x']}")
 
     st.caption(
-        "Use pen and paper to calculate y. "
-        "Do not use the sidebar controls."
+        "Work on paper. The substitution steps are hidden "
+        "until the game ends."
     )
 
     # ----------------------------------------
-    # ANSWER INPUTS
+    # STUDENT ANSWERS
     # ----------------------------------------
+
     if st.session_state.av_game_status == "playing":
 
         answer_col, opening_col = st.columns(2)
@@ -463,51 +450,81 @@ def render_av_game():
             use_container_width=True
         ):
             y_correct = int(student_y) == q["y"]
-            opening_correct = (
-                student_opening == q["opening"]
-            )
+            opening_correct = student_opening == q["opening"]
 
             points = (
                 (10 if y_correct else 0)
                 + (10 if opening_correct else 0)
             )
 
+            X = sp.Symbol("x")
+            expression = sp.simplify(
+                q["a"] * sp.Abs(X - q["h"]) + q["k"]
+            )
+
             st.session_state.av_game_score += points
 
             st.session_state.av_game_results.append({
-                "expression": sp.sympify(
-                    f"{q['a']}*Abs(x-({q['h']}))+({q['k']})",
-                    locals={"Abs": sp.Abs}
-                ),
+                "expression": expression,
+                "a": q["a"],
+                "h": q["h"],
+                "k": q["k"],
                 "x": q["x"],
                 "y": q["y"],
                 "opening": q["opening"],
                 "student_y": student_y,
                 "student_opening": student_opening,
-                "points": points
+                "points": points,
             })
 
             st.session_state.av_game_status = "answered"
             st.rerun()
 
     # ----------------------------------------
-    # FEEDBACK
+    # TIMEOUT FEEDBACK
     # ----------------------------------------
+
     elif st.session_state.av_game_status == "timeout":
-        st.warning("⏰ Time is up! This question earns no points.")
+        st.warning("⏰ Time is up! No points for this question.")
+
+        X = sp.Symbol("x")
+        expression = sp.simplify(
+            q["a"] * sp.Abs(X - q["h"]) + q["k"]
+        )
+
+        if (
+            not st.session_state.av_game_results
+            or len(st.session_state.av_game_results) <= index
+        ):
+            st.session_state.av_game_results.append({
+                "expression": expression,
+                "a": q["a"],
+                "h": q["h"],
+                "k": q["k"],
+                "x": q["x"],
+                "y": q["y"],
+                "opening": q["opening"],
+                "student_y": "Timed out",
+                "student_opening": "Timed out",
+                "points": 0,
+            })
 
         st.write(f"Correct y-value: {q['y']}")
         st.write(f"Correct opening: {q['opening']}")
+
+    # ----------------------------------------
+    # SUBMITTED ANSWER FEEDBACK
+    # ----------------------------------------
 
     elif st.session_state.av_game_status == "answered":
         result = st.session_state.av_game_results[-1]
 
         if result["points"] == 20:
-            st.success("🎉 Perfect! Both answers are correct!")
+            st.success("🎉 Both answers are correct!")
         elif result["points"] == 10:
-            st.info("👍 You got one answer correct. Keep going!")
+            st.info("👍 One answer is correct. Keep going!")
         else:
-            st.warning("Keep practicing! Review the correct answers below.")
+            st.warning("Review the correct answers below.")
 
         st.write(f"Correct y-value: {q['y']}")
         st.write(f"Correct opening: {q['opening']}")
@@ -516,9 +533,9 @@ def render_av_game():
     # ----------------------------------------
     # NEXT QUESTION
     # ----------------------------------------
-    if st.session_state.av_game_status in (
-        "answered", "timeout"
-    ):
+
+    if st.session_state.av_game_status in ("answered", "timeout"):
+
         if st.button(
             "➡️ Next Question",
             key=f"av_next_{index}",
@@ -526,7 +543,7 @@ def render_av_game():
         ):
             st.session_state.av_game_index += 1
             st.session_state.av_game_status = "playing"
-            st.session_state.av_game_deadline = time.time() + 15
+            st.session_state.av_game_deadline = time.time() + 60
             st.rerun()
 
 
