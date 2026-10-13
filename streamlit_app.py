@@ -184,9 +184,8 @@ with math_col:
 
     st.markdown("<hr style='margin:3px 0;'>", unsafe_allow_html=True)
 
-st.markdown("**Substitution**")
-
-st.latex(rf"y={a:g}\left|{x:g}-({h:g})\right|+({k:g})")
+	st.markdown("**Substitution**")
+	st.latex(rf"y={a:g}\left|{x:g}-({h:g})\right|+({k:g})")
 
     st.markdown("**Calculated y-value**")
     st.latex(rf"y={y:g}")
