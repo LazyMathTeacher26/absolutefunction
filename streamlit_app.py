@@ -206,219 +206,328 @@ with math_col:
 
 
 
+# --------------------------------------------
+# 6. RANDOM ABSOLUTE VALUE GAME
+# Independent of the sidebar function controls
+# --------------------------------------------
 
-# ---------------------------------
-# 6. GAMIFIED ABSOLUTE VALUE MISSION
-# ---------------------------------
+import random
+import time
+import sympy as sp
+import streamlit as st
 
 st.markdown("---")
-st.subheader("🎮 Absolute Value Mission")
+st.subheader("🎮 Absolute Value Speed Challenge")
 st.caption(
-    "Explore the function, predict its opening, "
-    "and substitute x-values to earn points!"
+    "10 random functions • 15 seconds per question • "
+    "Solve on paper, then enter your answers!"
 )
 
-# Initialize game state
-if "function_score" not in st.session_state:
-    st.session_state.function_score = 0
+# --------------------------------------------
+# GAME INITIALIZATION
+# --------------------------------------------
 
-if "function_round" not in st.session_state:
-    st.session_state.function_round = 0
+if "av_game_started" not in st.session_state:
+    st.session_state.av_game_started = False
 
-if "function_feedback" not in st.session_state:
-    st.session_state.function_feedback = {}
+if "av_game_questions" not in st.session_state:
+    st.session_state.av_game_questions = []
 
-if "function_attempts" not in st.session_state:
-    st.session_state.function_attempts = set()
+if "av_game_index" not in st.session_state:
+    st.session_state.av_game_index = 0
 
-# ---------------------------------
-# DISPLAY SIMPLIFIED FUNCTION
-# ---------------------------------
-st.markdown("**Your simplified function**")
-st.latex(rf"y={sp.latex(expr)}")
+if "av_game_score" not in st.session_state:
+    st.session_state.av_game_score = 0
 
-# ---------------------------------
-# THREE COMPACT GAME COLUMNS
-# ---------------------------------
-game1, game2, game3 = st.columns([1, 1.2, 1])
+if "av_game_deadline" not in st.session_state:
+    st.session_state.av_game_deadline = 0.0
 
-# ---------------------------------
-# CHALLENGE 1: OPENING DIRECTION
-# ---------------------------------
-with game1:
-    st.markdown("**🚀 Challenge 1: Opening**")
-    st.write("Which way does your graph open?")
+if "av_game_status" not in st.session_state:
+    st.session_state.av_game_status = "waiting"
 
-    opening_options = ["Upward", "Downward", "Horizontal"]
+if "av_game_results" not in st.session_state:
+    st.session_state.av_game_results = []
 
-    opening_key = f"opening_answer_{st.session_state.function_round}"
+# --------------------------------------------
+# GENERATE 10 RANDOM QUESTIONS
+# --------------------------------------------
 
-    opening_answer = st.radio(
-        "Choose the direction",
-        opening_options,
-        key=opening_key,
-        label_visibility="collapsed"
-    )
+def generate_av_questions():
+    questions = []
 
-    opening_id = (
-        st.session_state.function_round,
-        "opening"
-    )
+    for _ in range(10):
+        # Nonzero a creates upward or downward V-shapes
+        a = random.choice([-3, -2, -1, 1, 2, 3])
+        h = random.randint(-5, 5)
+        k = random.randint(-5, 5)
+        x = random.randint(-5, 5)
+
+        y = a * abs(x - h) + k
+
+        # Create a simplified symbolic equation
+        X = sp.Symbol("x")
+        expression = sp.simplify(
+            a * sp.Abs(X - h) + k
+        )
+
+        opening = "Upward" if a > 0 else "Downward"
+
+        questions.append({
+            "a": a,
+            "h": h,
+            "k": k,
+            "x": x,
+            "y": y,
+            "opening": opening,
+            "equation": sp.latex(expression)
+        })
+
+    return questions
+
+
+# --------------------------------------------
+# START / RESTART GAME
+# --------------------------------------------
+
+if not st.session_state.av_game_started:
+    st.markdown("### Ready, Math Detective?")
+    st.write("Each question is worth 20 points:")
+    st.write("- 10 points for the correct y-value.")
+    st.write("- 10 points for the correct opening direction.")
+    st.write("You have 15 seconds for each question.")
 
     if st.button(
-        "Check opening",
-        key=f"check_opening_{st.session_state.function_round}",
+        "🚀 Start Game",
+        key="av_start_game",
         use_container_width=True
     ):
-        if opening_id not in st.session_state.function_attempts:
-            correct_opening = (
-                "Upward" if a > 0
-                else "Downward" if a < 0
-                else "Horizontal"
+        st.session_state.av_game_questions = (
+            generate_av_questions()
+        )
+        st.session_state.av_game_index = 0
+        st.session_state.av_game_score = 0
+        st.session_state.av_game_results = []
+        st.session_state.av_game_status = "playing"
+        st.session_state.av_game_deadline = time.time() + 15
+        st.session_state.av_game_started = True
+        st.rerun()
+
+# --------------------------------------------
+# ACTIVE GAME WITH LIVE TIMER
+# Requires a recent Streamlit version supporting
+# st.fragment(run_every="1s")
+# --------------------------------------------
+
+@st.fragment(run_every="1s")
+def render_av_game():
+
+    if not st.session_state.av_game_started:
+        return
+
+    questions = st.session_state.av_game_questions
+    index = st.session_state.av_game_index
+
+    # ----------------------------------------
+    # GAME COMPLETE
+    # ----------------------------------------
+    if index >= 10:
+        st.success("🏁 Game complete!")
+
+        st.metric(
+            "Final Score",
+            f"{st.session_state.av_game_score} / 200"
+        )
+
+        percentage = (
+            st.session_state.av_game_score / 200
+        ) * 100
+
+        st.write(f"Accuracy score: {percentage:.0f}%")
+
+        if percentage >= 90:
+            st.balloons()
+            st.write("🏆 Outstanding! You're an Absolute Value Master!")
+        elif percentage >= 70:
+            st.write("👏 Great work! Keep practicing!")
+        else:
+            st.write("💪 Keep practicing. You can improve!")
+
+        with st.expander("Review all 10 questions"):
+            for i, result in enumerate(
+                st.session_state.av_game_results, start=1
+            ):
+                st.markdown(f"**Question {i}**")
+                st.latex(
+                    rf"y={sp.latex(result['expression'])}"
+                )
+                st.write(f"x = {result['x']}")
+                st.write(f"Correct y-value: {result['y']}")
+                st.write(f"Opening: {result['opening']}")
+                st.write(f"Your y-answer: {result['student_y']}")
+                st.write(f"Your opening answer: {result['student_opening']}")
+                st.write(f"Points earned: {result['points']}")
+                st.divider()
+
+        if st.button(
+            "🔄 Play Again",
+            key="av_play_again",
+            use_container_width=True
+        ):
+            st.session_state.av_game_questions = (
+                generate_av_questions()
+            )
+            st.session_state.av_game_index = 0
+            st.session_state.av_game_score = 0
+            st.session_state.av_game_results = []
+            st.session_state.av_game_status = "playing"
+            st.session_state.av_game_deadline = time.time() + 15
+            st.rerun()
+
+        return
+
+    q = questions[index]
+
+    # ----------------------------------------
+    # TIMER
+    # ----------------------------------------
+    remaining = max(
+        0,
+        int(
+            st.session_state.av_game_deadline - time.time()
+            + 0.999
+        )
+    )
+
+    if (
+        st.session_state.av_game_status == "playing"
+        and remaining <= 0
+    ):
+        st.session_state.av_game_status = "timeout"
+        st.rerun()
+
+    # ----------------------------------------
+    # PROGRESS AND SCORE
+    # ----------------------------------------
+    header1, header2, header3 = st.columns(3)
+
+    header1.metric("Question", f"{index + 1} / 10")
+    header2.metric("Time Left", f"{remaining} sec")
+    header3.metric("Score", st.session_state.av_game_score)
+
+    st.progress((index + 1) / 10)
+
+    # ----------------------------------------
+    # QUESTION
+    # ----------------------------------------
+    st.markdown(f"### ✏️ Question {index + 1}")
+
+    st.markdown("**Find the y-value and identify the opening.**")
+
+    # Equation is independent of the sidebar controls
+    st.latex(rf"y={q['equation']}")
+
+    st.markdown(
+        f"**Given:** x = {q['x']}"
+    )
+
+    st.caption(
+        "Use pen and paper to calculate y. "
+        "Do not use the sidebar controls."
+    )
+
+    # ----------------------------------------
+    # ANSWER INPUTS
+    # ----------------------------------------
+    if st.session_state.av_game_status == "playing":
+
+        answer_col, opening_col = st.columns(2)
+
+        with answer_col:
+            student_y = st.number_input(
+                "Your calculated y-value",
+                value=0,
+                step=1,
+                key=f"av_student_y_{index}"
             )
 
-            if opening_answer == correct_opening:
-                st.session_state.function_score += 10
-                st.session_state.function_feedback["opening"] = (
-                    f"✅ Correct! Since a = {a:g}, "
-                    f"the graph opens {correct_opening.lower()}."
-                )
-            else:
-                st.session_state.function_feedback["opening"] = (
-                    f"💡 The graph opens {correct_opening.lower()}. "
-                    f"Look at the sign of a = {a:g}."
-                )
+        with opening_col:
+            student_opening = st.radio(
+                "The graph opens:",
+                ["Upward", "Downward"],
+                key=f"av_student_opening_{index}"
+            )
 
-            st.session_state.function_attempts.add(opening_id)
+        if st.button(
+            "✅ Submit Answer",
+            key=f"av_submit_{index}",
+            use_container_width=True
+        ):
+            y_correct = int(student_y) == q["y"]
+            opening_correct = (
+                student_opening == q["opening"]
+            )
 
-    if "opening" in st.session_state.function_feedback:
-        st.info(st.session_state.function_feedback["opening"])
+            points = (
+                (10 if y_correct else 0)
+                + (10 if opening_correct else 0)
+            )
 
-# ---------------------------------
-# CHALLENGE 2: SUBSTITUTE AN X-VALUE
-# ---------------------------------
-with game2:
-    st.markdown("**🧮 Challenge 2: Substitute**")
+            st.session_state.av_game_score += points
 
-    challenge_x = st.number_input(
-        "Choose an x-value",
-        value=2.0,
-        step=1.0,
-        key="game_challenge_x"
-    )
+            st.session_state.av_game_results.append({
+                "expression": sp.sympify(
+                    f"{q['a']}*Abs(x-({q['h']}))+({q['k']})",
+                    locals={"Abs": sp.Abs}
+                ),
+                "x": q["x"],
+                "y": q["y"],
+                "opening": q["opening"],
+                "student_y": student_y,
+                "student_opening": student_opening,
+                "points": points
+            })
 
-    correct_y = a * abs(challenge_x - h) + k
+            st.session_state.av_game_status = "answered"
+            st.rerun()
 
-    # Simplified substitution display
-    st.markdown("**Substitute into the function**")
-    st.latex(
-        rf"y={a:g}\left|{challenge_x:g}-({h:g})\right|+({k:g})"
-    )
+    # ----------------------------------------
+    # FEEDBACK
+    # ----------------------------------------
+    elif st.session_state.av_game_status == "timeout":
+        st.warning("⏰ Time is up! This question earns no points.")
 
-    student_y = st.number_input(
-        "What is y?",
-        value=0.0,
-        step=1.0,
-        key=f"game_answer_{st.session_state.function_round}"
-    )
+        st.write(f"Correct y-value: {q['y']}")
+        st.write(f"Correct opening: {q['opening']}")
 
-    substitution_id = (
-        st.session_state.function_round,
-        "substitution"
-    )
+    elif st.session_state.av_game_status == "answered":
+        result = st.session_state.av_game_results[-1]
 
-    if st.button(
-        "Check y",
-        key=f"check_y_{st.session_state.function_round}",
-        use_container_width=True
+        if result["points"] == 20:
+            st.success("🎉 Perfect! Both answers are correct!")
+        elif result["points"] == 10:
+            st.info("👍 You got one answer correct. Keep going!")
+        else:
+            st.warning("Keep practicing! Review the correct answers below.")
+
+        st.write(f"Correct y-value: {q['y']}")
+        st.write(f"Correct opening: {q['opening']}")
+        st.write(f"Points earned: {result['points']} / 20")
+
+    # ----------------------------------------
+    # NEXT QUESTION
+    # ----------------------------------------
+    if st.session_state.av_game_status in (
+        "answered", "timeout"
     ):
-        if substitution_id not in st.session_state.function_attempts:
-            if np.isclose(student_y, correct_y):
-                st.session_state.function_score += 10
-                st.session_state.function_feedback["substitution"] = (
-                    f"✅ Correct! y = {correct_y:g}. "
-                    "You earned 10 points!"
-                )
-            else:
-                st.session_state.function_feedback["substitution"] = (
-                    "💡 Try again. Remember to evaluate the "
-                    "absolute value first."
-                )
+        if st.button(
+            "➡️ Next Question",
+            key=f"av_next_{index}",
+            use_container_width=True
+        ):
+            st.session_state.av_game_index += 1
+            st.session_state.av_game_status = "playing"
+            st.session_state.av_game_deadline = time.time() + 15
+            st.rerun()
 
-            st.session_state.function_attempts.add(substitution_id)
 
-    if "substitution" in st.session_state.function_feedback:
-        st.info(st.session_state.function_feedback["substitution"])
-
-# ---------------------------------
-# CHALLENGE 3: FUNCTION FACTS AND SCORE
-# ---------------------------------
-with game3:
-    st.markdown("**🏆 Challenge 3: Function Facts**")
-
-    st.caption(f"Vertex: ({h:g}, {k:g})")
-    st.caption(f"Symmetry: x = {h:g}")
-
-    if a > 0:
-        st.caption("↗ Opens upward")
-        st.caption(f"Range: y ≥ {k:g}")
-    elif a < 0:
-        st.caption("↘ Opens downward")
-        st.caption(f"Range: y ≤ {k:g}")
-    else:
-        st.caption("— Horizontal line")
-        st.caption(f"Range: y = {k:g}")
-
-    st.metric(
-        "Total points",
-        st.session_state.function_score
-    )
-
-    st.caption("10 points per correct challenge.")
-
-    if st.button(
-        "🔄 New Round",
-        key="new_function_round",
-        use_container_width=True
-    ):
-        st.session_state.function_round += 1
-        st.session_state.function_feedback = {}
-        st.rerun()
-
-    if st.button(
-        "Reset Score",
-        key="reset_function_score",
-        use_container_width=True
-    ):
-        st.session_state.function_score = 0
-        st.session_state.function_round += 1
-        st.session_state.function_feedback = {}
-        st.session_state.function_attempts = set()
-        st.rerun()
-
-# ---------------------------------
-# STEP-BY-STEP SOLUTION
-# ---------------------------------
-with st.expander("💡 Reveal the substitution steps"):
-    st.markdown("**Step 1: Start with the function**")
-    st.latex(r"y=a|x-h|+k")
-
-    st.markdown("**Step 2: Substitute the selected x-value**")
-    st.latex(
-        rf"y={a:g}\left|{challenge_x:g}-({h:g})\right|+({k:g})"
-    )
-
-    st.markdown("**Step 3: Evaluate the absolute value**")
-    st.latex(
-        rf"y={a:g}\times{abs(challenge_x-h):g}+({k:g})"
-    )
-
-    st.markdown("**Step 4: Multiply and add**")
-    st.latex(rf"y={correct_y:g}")
-
-    st.markdown("**Remember:**")
-    st.write(
-        "The sign of a determines the opening direction. "
-        "The vertex is (h, k), and the axis of symmetry is x = h."
-    )
-
+render_av_game()
