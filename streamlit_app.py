@@ -6,332 +6,200 @@ import sympy as sp
 
 st.set_page_config(
     page_title="Absolute Value Explorer",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-st.title("Interactive Absolute Value Explorer")
-
-st.write("Explore Absolute Value Function Intuitively")
-
-st.markdown(
-    '<div style="text-align:right; line-height:1.0;">'
-    '<div><strong>Shirhan A. Biottong</strong></div>'
-    '<div><em>Algebra 1 Teacher</em></div>'
-    '<div style="font-size:0.75em;">Atlantic Coast High School</div>'
-    '</div>',
-    unsafe_allow_html=True
-)
-
-st.latex(r"y = a|x-h|+k")
+st.markdown("""
+<style>
+.block-container {
+    padding-top: 0.4rem;
+    padding-bottom: 0rem;
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+}
+h1 {font-size: 1.5rem !important; margin: 0 !important;}
+h2, h3 {font-size: 1rem !important; margin: 0.2rem 0 !important;}
+p {margin-bottom: 0.15rem !important;}
+div[data-testid="stVerticalBlock"] {gap: 0.3rem;}
+div[data-testid="stMetric"] {padding: 0.2rem;}
+</style>
+""", unsafe_allow_html=True)
 
 # ---------------------------------
-# 1. FUNCTION PARAMETERS
+# 1. VERTICAL SIDEBAR CONTROLS
 # ---------------------------------
-st.subheader("1. Change the value to see dynamic changes in the graph")
+with st.sidebar:
+    st.subheader("1. Function Parameters")
 
-c1, c2, c3, c4 = st.columns(4)
+    a = st.number_input("a (stretch/flip)", value=1.0, step=0.5)
+    h = st.number_input("h (left/right)", value=0.0, step=1.0)
+    k = st.number_input("k (up/down)", value=0.0, step=1.0)
+    x = st.number_input("x (input point)", value=0.0, step=1.0)
 
-with c1:
-    a = st.number_input(
-        "a (stretch/flip)",
-        value=1.0,
-        step=0.5
-    )
+    st.divider()
+    st.subheader("2. Graph Window")
 
-with c2:
-    h = st.number_input(
-        "h (left/right)",
-        value=0.0,
-        step=1.0
-    )
+    st.caption("Horizontal axis (x)")
+    x_min = st.number_input("Minimum x", value=-10.0, step=1.0, key="xmin")
+    x_max = st.number_input("Maximum x", value=10.0, step=1.0, key="xmax")
 
-with c3:
-    k = st.number_input(
-        "k (up/down)",
-        value=0.0,
-        step=1.0
-    )
+    st.caption("Vertical axis (y)")
+    y_min = st.number_input("Minimum y", value=-10.0, step=1.0, key="ymin")
+    y_max = st.number_input("Maximum y", value=10.0, step=1.0, key="ymax")
 
-with c4:
-    x = st.number_input(
-        "x (input point)",
-        value=0.0,
-        step=1.0
-    )
+# ---------------------------------
+# 2. VALIDATE RANGES
+# ---------------------------------
+if x_min >= x_max or y_min >= y_max:
+    st.error("Each minimum must be less than its maximum.")
+    st.stop()
 
-# Calculate y for the selected x
+# ---------------------------------
+# 3. CALCULATE FUNCTION
+# ---------------------------------
 y = a * abs(x - h) + k
 
-# ---------------------------------
-# 2. DYNAMIC VIEWING RANGES
-# ---------------------------------
-st.subheader("2. Adjust the graph window")
-
-r1, r2 = st.columns(2)
-
-with r1:
-    st.markdown("**Horizontal axis (x)**")
-
-    x_min = st.number_input(
-        "Minimum x",
-        value=-20.0,
-        step=1.0,
-        key="xmin"
-    )
-
-    x_max = st.number_input(
-        "Maximum x",
-        value=20.0,
-        step=1.0,
-        key="xmax"
-    )
-
-with r2:
-    st.markdown("**Vertical axis (y)**")
-
-    y_min = st.number_input(
-        "Minimum y",
-        value=-20.0,
-        step=1.0,
-        key="ymin"
-    )
-
-    y_max = st.number_input(
-        "Maximum y",
-        value=20.0,
-        step=1.0,
-        key="ymax"
-    )
-
-# Validate viewing ranges
-if x_min >= x_max:
-    st.error("Minimum x must be less than maximum x.")
-    st.stop()
-
-if y_min >= y_max:
-    st.error("Minimum y must be less than maximum y.")
-    st.stop()
-
-# ---------------------------------
-# 3. GENERATE GRAPH
-# ---------------------------------
-xs = np.linspace(x_min, x_max, 1200)
-ys = a * np.abs(xs - h) + k
-
-fig, ax = plt.subplots(figsize=(11, 7))
-
-# Dark background
-fig.patch.set_facecolor("#202124")
-ax.set_facecolor("#202124")
-
-# Plot absolute value function
-ax.plot(
-    xs,
-    ys,
-    color="deepskyblue",
-    linewidth=2.5,
-    label=r"$y=a|x-h|+k$"
-)
-
-# White coordinate axes
-ax.axhline(
-    y=0,
-    color="white",
-    linewidth=1.8,
-    zorder=2
-)
-
-ax.axvline(
-    x=0,
-    color="white",
-    linewidth=1.8,
-    zorder=2
-)
-
-# Green dotted line of symmetry: x = h
-ax.axvline(
-    x=h,
-    color="lime",
-    linestyle=":",
-    linewidth=2.5,
-    label=f"Axis of symmetry: x = {h:g}",
-    zorder=3
-)
-
-# Vertex
-ax.scatter(
-    h,
-    k,
-    color="red",
-    s=110,
-    zorder=5,
-    label=f"Vertex ({h:g}, {k:g})"
-)
-
-# Selected input point
-ax.scatter(
-    x,
-    y,
-    color="yellow",
-    edgecolors="black",
-    linewidths=0.7,
-    s=110,
-    zorder=6,
-    label=f"Point ({x:g}, {y:g})"
-)
-
-# Dashed guide lines for selected point
-ax.plot(
-    [x, x],
-    [0, y],
-    color="yellow",
-    linestyle="--",
-    alpha=0.8
-)
-
-ax.plot(
-    [0, x],
-    [y, y],
-    color="yellow",
-    linestyle="--",
-    alpha=0.8
-)
-
-# ---------------------------------
-# 4. AXIS LIMITS AND TICK INTERVALS
-# ---------------------------------
-ax.set_xlim(x_min, x_max)
-ax.set_ylim(y_min, y_max)
-
-# Tick interval is ALWAYS exactly 1 unit
-ax.set_xticks(
-    np.arange(
-        np.ceil(x_min),
-        np.floor(x_max) + 1,
-        1
-    )
-)
-
-ax.set_yticks(
-    np.arange(
-        np.ceil(y_min),
-        np.floor(y_max) + 1,
-        1
-    )
-)
-
-# White tick labels and grid
-ax.tick_params(
-    axis="both",
-    colors="white",
-    labelsize=9
-)
-
-ax.grid(
-    True,
-    color="white",
-    alpha=0.18
-)
-
-# White graph borders
-for spine in ax.spines.values():
-    spine.set_color("white")
-
-# Axis labels
-ax.set_xlabel(
-    "x-axis",
-    color="white",
-    fontsize=12
-)
-
-ax.set_ylabel(
-    "y-axis",
-    color="white",
-    fontsize=12
-)
-
-ax.set_title(
-    "Absolute Value Function",
-    color="white",
-    fontsize=15
-)
-
-# Legend
-legend = ax.legend(loc="best")
-legend.get_frame().set_facecolor("#303134")
-legend.get_frame().set_edgecolor("white")
-
-for text in legend.get_texts():
-    text.set_color("white")
-
-fig.tight_layout()
-
-st.pyplot(fig)
-plt.close(fig)
-
-# ---------------------------------
-# 5. STEP-BY-STEP CALCULATIONS
-# ---------------------------------
-st.subheader("3. Explore the mathematics")
-
-
-st.markdown("**Simplified Equation**")
-
 X = sp.Symbol("x")
+ac = sp.nsimplify(a)
+hc = sp.nsimplify(h)
+kc = sp.nsimplify(k)
 
-# Convert whole-number decimals to integers
-a_clean = sp.nsimplify(a)
-h_clean = sp.nsimplify(h)
-k_clean = sp.nsimplify(k)
+expr = sp.simplify(ac * sp.Abs(X - hc) + kc)
 
-expr = sp.simplify(
-    a_clean * sp.Abs(X - h_clean) + k_clean
-)
+# Simplify coefficient 1 and avoid unnecessary + 0
+if ac == 1:
+    expr = sp.Abs(X - hc) + kc
+elif ac == -1:
+    expr = -sp.Abs(X - hc) + kc
 
-# Remove unnecessary coefficient 1
-if a_clean == 1:
-    expr = sp.Abs(X - h_clean) + k_clean
-elif a_clean == -1:
-    expr = -sp.Abs(X - h_clean) + k_clean
+expr = sp.simplify(expr)
 
-st.latex(rf"y={sp.latex(sp.simplify(expr))}")
+# ---------------------------------
+# 4. HEADER
+# ---------------------------------
+left, right = st.columns([3, 1])
 
-st.markdown("**To solve for y,substitute the selected x-value**")
-st.latex(rf"y={a:g}|{x:g}-({h:g})|+({k:g})")
+with left:
+    st.title("Interactive Absolute Value Explorer")
+    st.caption("Explore Absolute Value Functions Intuitively")
 
-st.markdown("**Calculated y-value**")
-st.latex(rf"y={y:g}")
+with right:
+    st.markdown("""
+    <div style="text-align:right;line-height:1.1;font-size:0.8rem;">
+    <strong>Shirhan A. Biottong</strong><br>
+    <em>Algebra 1 Teacher</em><br>
+    <span style="font-size:0.7rem;">Atlantic Coast High School</span>
+    </div>
+    """, unsafe_allow_html=True)
 
-# Display important properties
-m1, m2, m3 = st.columns(3)
+# ---------------------------------
+# 5. GRAPH AND MATHEMATICS
+# ---------------------------------
+graph_col, math_col = st.columns([1.7, 1])
 
-m1.metric(
-    "Vertex",
-    f"({h:g}, {k:g})"
-)
+with graph_col:
+    st.latex(r"y=a|x-h|+k")
 
-m2.metric(
-    "Selected point",
-    f"({x:g}, {y:g})"
-)
+    xs = np.linspace(x_min, x_max, 1000)
+    ys = a * np.abs(xs - h) + k
 
-m3.metric(
-    "Axis of symmetry",
-    f"x = {h:g}"
-)
+    fig, ax = plt.subplots(figsize=(7, 4.8))
+    fig.patch.set_facecolor("#202124")
+    ax.set_facecolor("#202124")
 
-# Opening direction and range
-if a > 0:
-    st.success(
-        f"The graph opens upward. Range: y ≥ {k:g}"
-    )
-elif a < 0:
-    st.info(
-        f"The graph opens downward. Range: y ≤ {k:g}"
-    )
-else:
-    st.info(
-        f"The graph is a horizontal line. Range: y = {k:g}"
+    ax.plot(
+        xs, ys,
+        color="deepskyblue",
+        linewidth=2.5,
+        label=r"$y=a|x-h|+k$"
     )
 
-st.write("**Domain:** all real numbers.")
+    # White coordinate axes
+    ax.axhline(0, color="white", linewidth=1.5)
+    ax.axvline(0, color="white", linewidth=1.5)
+
+    # Green dotted symmetry line
+    ax.axvline(
+        h, color="lime", linestyle=":",
+        linewidth=2,
+        label=f"Symmetry: x = {h:g}"
+    )
+
+    # Vertex
+    ax.scatter(
+        h, k, color="red", s=85, zorder=5,
+        label=f"Vertex ({h:g}, {k:g})"
+    )
+
+    # Selected point
+    ax.scatter(
+        x, y, color="yellow", edgecolors="black",
+        s=85, zorder=6,
+        label=f"Point ({x:g}, {y:g})"
+    )
+
+    # Guide lines
+    ax.plot([x, x], [0, y], color="yellow", linestyle="--", alpha=0.8)
+    ax.plot([0, x], [y, y], color="yellow", linestyle="--", alpha=0.8)
+
+    ax.set_xlim(x_min, x_max)
+    ax.set_ylim(y_min, y_max)
+
+    # One-unit tick intervals
+    ax.set_xticks(np.arange(np.ceil(x_min), np.floor(x_max) + 1, 1))
+    ax.set_yticks(np.arange(np.ceil(y_min), np.floor(y_max) + 1, 1))
+
+    ax.tick_params(colors="white", labelsize=8)
+    ax.grid(True, color="white", alpha=0.18)
+
+    for spine in ax.spines.values():
+        spine.set_color("white")
+
+    ax.set_xlabel("x-axis", color="white")
+    ax.set_ylabel("y-axis", color="white")
+    ax.set_title("Absolute Value Function", color="white", fontsize=12)
+
+    legend = ax.legend(loc="best", fontsize=7)
+    legend.get_frame().set_facecolor("#303134")
+    legend.get_frame().set_edgecolor("white")
+
+    for label in legend.get_texts():
+        label.set_color("white")
+
+    fig.tight_layout(pad=0.7)
+    st.pyplot(fig, use_container_width=True)
+    plt.close(fig)
+
+with math_col:
+    st.subheader("3. Explore the Mathematics")
+
+    st.markdown("**Simplified Equation**")
+    st.latex(rf"y={sp.latex(expr)}")
+
+    st.divider()
+
+    st.markdown("**Substitution**")
+    st.latex(rf"y={a:g}\left|{x:g}-({h:g})\right|+({k:g})")
+
+    st.markdown("**Calculated y-value**")
+    st.latex(rf"y={y:g}")
+
+    st.divider()
+
+    st.markdown("**Key Properties**")
+    st.write(f"Vertex: ({h:g}, {k:g})")
+    st.write(f"Selected point: ({x:g}, {y:g})")
+    st.write(f"Axis of symmetry: x = {h:g}")
+
+    if a > 0:
+        st.write("Opens upward")
+        st.write(f"Range: y ≥ {k:g}")
+    elif a < 0:
+        st.write("Opens downward")
+        st.write(f"Range: y ≤ {k:g}")
+    else:
+        st.write("Horizontal line")
+        st.write(f"Range: y = {k:g}")
+
+    st.caption("Domain: all real numbers.")
