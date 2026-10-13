@@ -651,13 +651,45 @@ def render_av_game():
     if status == "playing" and remaining <= 10:
         st.warning("⏰ Final seconds! Check your answer.")
 
-    st.markdown('<div class="game-card">', unsafe_allow_html=True)
-    st.markdown("**Calculate the y-value and identify the opening direction.**")
-    st.latex(rf"y={q['a']} \left|x-({q['h']})\right|+({q['k']})")
-    st.markdown(f"**Given:** x = {q['x']}")
-    st.markdown("</div>", unsafe_allow_html=True)
-    st.caption("Hint: calculate the absolute value first, then multiply by a and add k.")
+    st.markdown("""
 
+<div class="game-card" style="text-align:center;padding:24px 16px;">
+
+    <div style="font-size:0.85rem;color:#A9BCD2;margin-bottom:12px;">
+
+        STINGRAY MATH CHALLENGE
+
+    </div>
+
+    <div style="font-size:1.05rem;font-weight:700;color:#FFFFFF;">
+
+        Calculate the y-value and identify the opening direction.
+
+    </div>
+
+</div>
+
+""", unsafe_allow_html=True)
+
+st.latex(
+
+    rf"y={q['a']} \left|x-({q['h']})\right|+({q['k']})"
+
+)
+
+st.markdown(
+
+    f"**Given:** \\(x={q['x']}\\)"
+
+)
+
+st.caption(
+
+    "Hint: calculate the absolute value first, "
+
+    "then multiply by a and add k."
+
+)
     if status == "playing":
         with st.form(key=f"av_answer_form_{st.session_state.av_game_session_id}_{index}"):
             answer_col, opening_col = st.columns(2)
