@@ -19,16 +19,20 @@ st.set_page_config(
 st.markdown("""
 <style>
 .block-container {
-    padding-top: 0.45rem;
-    padding-bottom: 1rem;
-    padding-left: 0.8rem;
-    padding-right: 0.8rem;
+    padding-top: 0.15rem !important;
+    padding-bottom: 0.35rem !important;
+    padding-left: 0.65rem !important;
+    padding-right: 0.65rem !important;
 }
-h1 {font-size: 1.6rem !important; margin: 0 !important;}
-h2, h3 {font-size: 1.08rem !important; margin: 0.25rem 0 !important;}
-p {margin-bottom: 0.2rem !important;}
-div[data-testid="stVerticalBlock"] {gap: 0.4rem;}
-div[data-testid="stMetric"] {padding: 0.25rem;}
+h1 {font-size: 1.45rem !important; margin: 0.1rem 0 0.15rem 0 !important; padding: 0 !important;}
+h2, h3 {font-size: 1.02rem !important; margin: 0.15rem 0 !important; padding: 0 !important;}
+p {margin-top: 0 !important; margin-bottom: 0.12rem !important;}
+div[data-testid="stVerticalBlock"] {gap: 0.25rem;}
+div[data-testid="stMetric"] {padding: 0.15rem;}
+hr {margin: 0.25rem 0 !important;}
+div[data-testid="stHorizontalBlock"] {gap: 0.65rem;}
+header[data-testid="stHeader"] {height: 1.5rem; background: transparent;}
+
 .game-card {
     padding: 0.8rem 1rem;
     border: 1px solid rgba(128,128,128,0.35);
@@ -73,20 +77,17 @@ elif ac == -1:
 expr = sp.simplify(expr)
 
 # ---------------------------------------------------------
-# HEADER
+# HEADER — keep teacher attribution visible at the top
 # ---------------------------------------------------------
-left, right = st.columns([3, 1])
-with left:
-    st.title("📐 Interactive Absolute Value Explorer")
-    st.caption("Explore, experiment, and master absolute value functions.")
-with right:
-    st.markdown("""
-    <div style="text-align:right;line-height:1.1;font-size:0.8rem;">
-    <strong>Shirhan A. Biottong</strong><br>
-    <em>Algebra 1 Teacher</em><br>
-    <span style="font-size:0.7rem;">Atlantic Coast High School</span>
-    </div>
-    """, unsafe_allow_html=True)
+st.markdown("""
+<div style="text-align:right; line-height:1.12; margin:0 0 2px 0; padding:0;">
+  <strong>Shirhan A. Biottong</strong><br>
+  <em>Algebra 1</em> Teacher<br>
+  <span style="font-size:10px; color:#888;">Atlantic Coast High School</span>
+</div>
+""", unsafe_allow_html=True)
+st.title("📐 Interactive Absolute Value Explorer")
+st.caption("Explore, experiment, and master absolute value functions.")
 
 # ---------------------------------------------------------
 # MAIN EXPLORER
@@ -97,7 +98,7 @@ with graph_col:
     xs = np.linspace(x_min, x_max, 1000)
     ys = a * np.abs(xs - h) + k
 
-    fig, ax = plt.subplots(figsize=(7, 4.8))
+    fig, ax = plt.subplots(figsize=(7, 4.1))
     fig.patch.set_facecolor("#202124")
     ax.set_facecolor("#202124")
     ax.plot(xs, ys, color="deepskyblue", linewidth=2.5, label=r"$y=a|x-h|+k$")
@@ -153,7 +154,7 @@ with math_col:
         st.write(f"Range: y = {k:g}")
     st.caption("Domain: all real numbers.")
 
-st.markdown("---")
+st.markdown('<hr style="margin:3px 0 5px 0;">', unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 # GAME STATE
