@@ -22,8 +22,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
-
 st.latex(r"y = a|x-h|+k")
 
 # ---------------------------------
