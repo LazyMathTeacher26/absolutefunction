@@ -277,10 +277,20 @@ plt.close(fig)
 st.subheader("3. Explore the mathematics")
 st.markdown("**Substitute the selected x-value**")
 st.latex(rf"y={a:g}|{x:g}-({h:g})|+({k:g})")
+
 st.markdown("**Simplified Equation**")
+
 X = sp.Symbol("x")
-expr = a * sp.Abs(X - h) + k
+expr = sp.simplify(a * sp.Abs(X - h) + k)
+
+# Remove unnecessary coefficient 1
+if a == 1:
+    expr = sp.Abs(X - h) + k
+elif a == -1:
+    expr = -sp.Abs(X - h) + k
+
 st.latex(rf"y={sp.latex(sp.simplify(expr))}")
+
 
 
 
