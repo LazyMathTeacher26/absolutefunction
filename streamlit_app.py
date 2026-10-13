@@ -160,6 +160,7 @@ with graph_col:
     plt.close(fig)
 
 with math_col:
+	st.markdown("")
     st.markdown("**3. Explore the Mathematics**")
     st.markdown("**Simplified Equation**")
     st.latex(rf"y={sp.latex(expr)}")
@@ -174,15 +175,15 @@ with math_col:
         f"<div style='line-height:1.25;'>"
         f"Vertex: ({h:g}, {k:g})<br>"
         f"Selected point: ({x:g}, {y:g})<br>"
-        f"Axis of symmetry: x = {h:g}<br></div>",
+        f"Axis of symmetry: x = {h:g}</div>",
         unsafe_allow_html=True,
     )
     if a > 0:
-        st.markdown(f"<div style='line-height:1.25;'>Opens upward<br>Range: y ≥ {k:g}<br></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='line-height:1.25;'><br>Opens upward<br>Range: y ≥ {k:g}<br></div>", unsafe_allow_html=True)
     elif a < 0:
-        st.markdown(f"<div style='line-height:1.25;'>Opens downward<br>Range: y ≤ {k:g}<br></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='line-height:1.25;'><br>Opens downward<br>Range: y ≤ {k:g}<br></div>", unsafe_allow_html=True)
     else:
-        st.markdown(f"<div style='line-height:1.25;'>Horizontal line<br>Range: y = {k:g}<br></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='line-height:1.25;'><br>Horizontal line<br>Range: y = {k:g}<br></div>", unsafe_allow_html=True)
     st.markdown("Domain: all real numbers.")
 
 # ---------------------------------------------------------
