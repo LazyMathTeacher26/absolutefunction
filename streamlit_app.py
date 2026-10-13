@@ -226,48 +226,102 @@ div[data-testid="column"]:has(.math-panel-marker) {
 </style>
 """, unsafe_allow_html=True)
 
-# =========================================================
-# TOP HEADING AND TEACHER ATTRIBUTION
-# =========================================================
+# ---------------------------------------------------------
+# TOP HEADING + TEACHER ATTRIBUTION
+# ---------------------------------------------------------
 st.markdown("""
-<div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-    width:100%;
-    margin:0 0 8px 0;
-    padding:8px 0;
-">
-    <div style="flex:1 1 auto; min-width:0;">
-        <div style="
-            font-size:clamp(1.15rem, 2.2vw, 1.65rem);
-            font-weight:750;
-            line-height:1.2;
-            color:#F8FAFC;
-            letter-spacing:-0.025em;
-        ">
+<style>
+/* Atlantic Coast Stingrays-inspired colors */
+:root {
+    --stingray-navy: #101B32;
+    --stingray-blue: #37BDF8;
+    --stingray-white: #F8FAFC;
+    --stingray-muted: #A9B8CC;
+}
+
+/* Heading row */
+.stingray-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 0 14px 0;
+    margin: 0;
+}
+
+/* App title */
+.stingray-title {
+    color: var(--stingray-white);
+    font-size: clamp(1.15rem, 2.2vw, 1.7rem);
+    font-weight: 750;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    margin: 0;
+}
+
+/* Subtitle */
+.stingray-subtitle {
+    color: var(--stingray-muted);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-top: 6px;
+}
+
+/* Teacher attribution */
+.stingray-teacher {
+    flex: 0 0 auto;
+    text-align: right;
+    color: var(--stingray-white);
+    font-size: 0.78rem;
+    line-height: 1.45;
+    white-space: nowrap;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* School name */
+.stingray-school {
+    color: var(--stingray-muted);
+    font-size: 0.65rem;
+}
+
+/* Small-screen layout */
+@media (max-width: 600px) {
+    .stingray-header {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .stingray-teacher {
+        font-size: 0.68rem;
+        white-space: normal;
+        max-width: 42%;
+    }
+
+    .stingray-school {
+        font-size: 0.6rem;
+    }
+}
+</style>
+
+<div class="stingray-header">
+    <div style="flex:1; min-width:0;">
+        <div class="stingray-title">
             📐 Stingray Absolute Value Explorer
         </div>
-        <div style="
-            font-size:0.85rem;
-            color:#94A3B8;
-            margin-top:5px;
-        ">
+        <div class="stingray-subtitle">
             Explore, experiment, and master absolute value functions.
         </div>
     </div>
 
-    <div style="
-        flex:0 0 auto;
-        text-align:right;
-        line-height:1.4;
-        font-size:0.78rem;
-        color:#E2E8F0;
-    ">
+    <div class="stingray-teacher">
         <strong>Shirhan A. Biottong</strong><br>
-        <em>Algebra 1 Teacher</em><br>
-        <span style="font-size:0.65rem;color:#94A3B8;">
+        <em>Algebra 1</em> Teacher<br>
+        <span class="stingray-school">
             Atlantic Coast High School
         </span>
     </div>
