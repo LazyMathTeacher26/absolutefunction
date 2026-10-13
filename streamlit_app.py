@@ -152,9 +152,6 @@ with math_col:
         st.write("Horizontal line")
         st.write(f"Range: y = {k:g}")
     st.caption("Domain: all real numbers.")
-
-st.markdown("---")
-
 # ---------------------------------------------------------
 # GAME STATE
 # ---------------------------------------------------------
