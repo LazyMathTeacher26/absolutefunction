@@ -659,7 +659,7 @@ def render_av_game():
 
     st.markdown('<div class="game-card">', unsafe_allow_html=True)
     st.markdown("**Calculate the y-value and identify the opening direction.**")
-    st.latex(rf"y={q['equation_latex']}")
+    st.latex(rf"y={q['a']} \left|x-({q['h']})\right|+({q['k']})")
     st.markdown(f"**Given:** x = {q['x']}")
     st.markdown("</div>", unsafe_allow_html=True)
     st.caption("Hint: calculate the absolute value first, then multiply by a and add k.")
