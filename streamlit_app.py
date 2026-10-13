@@ -174,15 +174,15 @@ with math_col:
         f"<div style='line-height:1.25;'>"
         f"Vertex: ({h:g}, {k:g})<br>"
         f"Selected point: ({x:g}, {y:g})<br>"
-        f"Axis of symmetry: x = {h:g}<br></div>",
+        f"Axis of symmetry: x = {h:g}</div><br>",
         unsafe_allow_html=True,
     )
     if a > 0:
-        st.markdown(f"<div style='line-height:1.25;'>Opens upward<br>Range: y ≥ {k:g}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='line-height:1.25;'>Opens upward<br>Range: y ≥ {k:g}</div>", unsafe_allow_html=True)<br>
     elif a < 0:
-        st.markdown(f"<div style='line-height:1.25;'>Opens downward<br>Range: y ≤ {k:g}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='line-height:1.25;'>Opens downward<br>Range: y ≤ {k:g}</div>", unsafe_allow_html=True)<br>
     else:
-        st.markdown(f"<div style='line-height:1.25;'>Horizontal line<br>Range: y = {k:g}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='line-height:1.25;'>Horizontal line<br>Range: y = {k:g}</div>", unsafe_allow_html=True)<br>
     st.markdown("Domain: all real numbers.")
 
 # ---------------------------------------------------------
