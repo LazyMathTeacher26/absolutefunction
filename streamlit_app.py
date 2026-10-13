@@ -85,7 +85,7 @@ st.markdown("""
   </div>
 </div>
 """, unsafe_allow_html=True)
-
+st.divider()
 # ---------------------------------------------------------
 # SIDEBAR: INTERACTIVE FUNCTION CONTROLS
 # ---------------------------------------------------------
@@ -158,7 +158,7 @@ with graph_col:
     fig.tight_layout(pad=0.7)
     st.pyplot(fig, use_container_width=True)
     plt.close(fig)
-
+st.divider()
 with math_col:
     st.markdown("**3. Explore the Mathematics**")
     st.markdown("**Simplified Equation**")
