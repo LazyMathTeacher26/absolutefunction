@@ -161,31 +161,46 @@ with graph_col:
     st.pyplot(fig, use_container_width=True)
     plt.close(fig)
 
+
 with math_col:
     st.markdown(
-        "<div style='font-size:1rem;font-weight:700;line-height:1.2;margin:0 0 4px 0;padding-top:10px;'>"
+        "<div style='padding-top:10px;'>",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        "<div style='font-size:1rem;font-weight:700;line-height:1.2;margin:0 0 4px 0;'>"
         "3. Explore the Mathematics</div>",
         unsafe_allow_html=True,
     )
+
     st.markdown("**Simplified Equation**")
     st.latex(rf"y={sp.latex(expr)}")
+
     st.markdown("<hr style='margin:3px 0;'>", unsafe_allow_html=True)
+
     st.markdown("**Substitution**")
     st.latex(rf"y={a:g}\left|{x:g}-({h:g})\right|+({k:g})")
+
     st.markdown("**Calculated y-value**")
     st.latex(rf"y={y:g}")
+
     st.markdown("<hr style='margin:3px 0;'>", unsafe_allow_html=True)
+
     st.markdown("**Key Properties**")
+
     opening_text = (
         "Opens upward" if a > 0 else
         "Opens downward" if a < 0 else
         "Horizontal line"
     )
+
     range_text = (
         f"Range: y ≥ {k:g}" if a > 0 else
         f"Range: y ≤ {k:g}" if a < 0 else
         f"Range: y = {k:g}"
     )
+
     st.markdown(
         f"<div style='font-size:0.88rem;line-height:1.25;'>"
         f"Vertex: ({h:g}, {k:g})<br>"
@@ -195,7 +210,9 @@ with math_col:
         f"Domain: all real numbers.</div>",
         unsafe_allow_html=True,
     )
+
 st.divider()
+
 # ---------------------------------------------------------
 # GAME STATE
 # ---------------------------------------------------------
