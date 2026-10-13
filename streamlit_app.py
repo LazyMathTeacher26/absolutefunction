@@ -16,50 +16,198 @@ st.set_page_config(
 # ---------------------------------------------------------
 # COMPACT PAGE STYLE + TOP HEADING
 # ---------------------------------------------------------
+
+# ---------------------------------------------------------
+# PREMIUM PAGE STYLE + TOP HEADING
+# ---------------------------------------------------------
 st.markdown("""
 <style>
-/* Remove excess top whitespace while leaving Streamlit controls usable */
+/* Premium dark navy background */
+.stApp {
+    background:
+        radial-gradient(ellipse at 8% 0%, rgba(37, 99, 235, 0.18), transparent 38%),
+        linear-gradient(145deg, #080F1D 0%, #101A2D 55%, #0B1220 100%);
+    color: #F1F5F9;
+}
+
+/* Main content layout */
 .stAppViewBlockContainer,
 .block-container {
-    padding-top: 0.35rem !important;
-    padding-bottom: 0.45rem !important;
+    max-width: 1600px;
+    padding-top: 0.65rem !important;
+    padding-bottom: 1.2rem !important;
 }
 
-/* Streamlit's header can reserve space even when visually empty */
+/* Keep Streamlit controls usable */
 header[data-testid="stHeader"] {
-    height: 0rem !important;
-    min-height: 0rem !important;
+    background: transparent;
+    height: 2.5rem;
 }
 
-/* Compact vertical spacing */
-div[data-testid="stVerticalBlock"] {
-    gap: 0.45rem;
-}
-
-/* Reduce heading margins */
+/* Typography */
 h1, h2, h3 {
-    margin-top: 0.1rem !important;
-    margin-bottom: 0.25rem !important;
+    color: #F8FAFC !important;
+    letter-spacing: -0.025em;
+    font-weight: 750 !important;
+    margin-top: 0.15rem !important;
+    margin-bottom: 0.4rem !important;
 }
 
-/* Compact horizontal rules */
+p {
+    color: #CBD5E1;
+    margin-bottom: 0.4rem !important;
+}
+
+/* Balanced vertical spacing */
+div[data-testid="stVerticalBlock"] {
+    gap: 0.65rem;
+}
+
+/* Dividers */
 hr {
-    margin-top: 0.25rem !important;
-    margin-bottom: 0.25rem !important;
+    border-color: rgba(148, 163, 184, 0.22) !important;
+    margin-top: 0.4rem !important;
+    margin-bottom: 0.4rem !important;
 }
 
-/* Keep plot images from adding extra bottom whitespace */
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #111D32 0%, #0B1220 100%);
+    border-right: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 {
+    color: #93C5FD !important;
+}
+
+/* Sidebar labels */
+section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] .stCaption {
+    color: #CBD5E1 !important;
+}
+
+/* Inputs */
+.stNumberInput input,
+.stTextInput input,
+.stSelectbox div[data-baseweb="select"] {
+    border-radius: 10px;
+}
+
+/* Buttons */
+.stButton > button,
+.stFormSubmitButton > button {
+    min-height: 2.65rem;
+    border-radius: 12px;
+    font-weight: 650;
+    border: 1px solid rgba(96, 165, 250, 0.38);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.stButton > button[kind="primary"],
+.stFormSubmitButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #2563EB, #0891B2);
+    color: #FFFFFF;
+    border: none;
+    box-shadow: 0 5px 18px rgba(37, 99, 235, 0.22);
+}
+
+.stButton > button:hover,
+.stFormSubmitButton > button:hover {
+    border-color: #38BDF8;
+    transform: translateY(-1px);
+}
+
+/* Metrics */
+div[data-testid="stMetric"] {
+    background: rgba(30, 48, 75, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.17);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+div[data-testid="stMetricLabel"] {
+    color: #94A3B8 !important;
+}
+
+div[data-testid="stMetricValue"] {
+    color: #7DD3FC !important;
+    font-weight: 750;
+}
+
+/* Feedback and status messages */
+div[data-testid="stAlert"] {
+    border-radius: 12px;
+}
+
+/* Expanders */
+div[data-testid="stExpander"] {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+/* Game cards */
+.game-card {
+    background: linear-gradient(
+        135deg,
+        rgba(30, 58, 95, 0.88),
+        rgba(15, 27, 47, 0.96)
+    );
+    border: 1px solid rgba(96, 165, 250, 0.30);
+    border-radius: 18px;
+    padding: 20px;
+    margin: 8px 0 14px 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
+}
+
+.small-muted {
+    color: #94A3B8;
+    font-size: 0.85rem;
+}
+
+/* Progress bars */
+div[data-testid="stProgress"] > div > div {
+    background: linear-gradient(90deg, #38BDF8, #34D399);
+}
+
+/* Plot spacing */
 div[data-testid="stImage"] {
     margin-bottom: 0 !important;
 }
+
+/* Equations and markdown */
+div[data-testid="stMarkdownContainer"] {
+    line-height: 1.5;
+}
+
 .stMarkdown p {
-    margin-bottom: 0.3rem !important;
+    margin-bottom: 0.4rem !important;
+}
+
+/* Responsive spacing for phones and smaller tablets */
+@media (max-width: 700px) {
+    .stAppViewBlockContainer,
+    .block-container {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    div[data-testid="stVerticalBlock"] {
+        gap: 0.5rem;
+    }
+
+    .game-card {
+        padding: 15px;
+        border-radius: 14px;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
 
-# Render the heading as the FIRST visible element, before all page content.
-# A single HTML block avoids extra height from Streamlit columns/title widgets.
+# ---------------------------------------------------------
+# TOP HEADING + TEACHER ATTRIBUTION
+# ---------------------------------------------------------
 st.markdown("""
 <div style="
     display:flex;
@@ -67,24 +215,43 @@ st.markdown("""
     align-items:center;
     gap:12px;
     width:100%;
-    margin:0 0 5px 0;
-    padding:0;
+    margin:0 0 8px 0;
+    padding:8px 0;
 ">
   <div style="flex:1 1 auto; min-width:0;">
-    <div style="font-size:clamp(1.15rem, 2.2vw, 1.65rem); font-weight:750; line-height:1.15;">
+    <div style="
+        font-size:clamp(1.15rem, 2.2vw, 1.65rem);
+        font-weight:750;
+        line-height:1.2;
+        color:#F8FAFC;
+        letter-spacing:-0.025em;
+    ">
       📐 Interactive Absolute Value Explorer
     </div>
-    <div style="font-size:0.82rem; color:var(--text-color); opacity:0.72; margin-top:3px;">
+    <div style="
+        font-size:0.85rem;
+        color:#94A3B8;
+        margin-top:5px;
+    ">
       Explore, experiment, and master absolute value functions.
     </div>
   </div>
-  <div style="flex:0 0 auto; text-align:right; line-height:1.2; font-size:0.78rem;">
+  <div style="
+      flex:0 0 auto;
+      text-align:right;
+      line-height:1.4;
+      font-size:0.78rem;
+      color:#E2E8F0;
+  ">
     <strong>Shirhan A. Biottong</strong><br>
     <em>Algebra 1 Teacher</em><br>
-    <span style="font-size:0.65rem; opacity:0.72;">Atlantic Coast High School</span>
+    <span style="font-size:0.65rem;color:#94A3B8;">
+      Atlantic Coast High School
+    </span>
   </div>
 </div>
 """, unsafe_allow_html=True)
+
     
 
 # ---------------------------------------------------------
