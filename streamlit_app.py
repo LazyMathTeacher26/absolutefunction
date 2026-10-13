@@ -85,7 +85,7 @@ st.markdown("""
   </div>
 </div>
 """, unsafe_allow_html=True)
-st.divider()
+
 # ---------------------------------------------------------
 # SIDEBAR: INTERACTIVE FUNCTION CONTROLS
 # ---------------------------------------------------------
@@ -122,13 +122,13 @@ expr = sp.simplify(expr)
 # ---------------------------------------------------------
 # MAIN EXPLORER
 # ---------------------------------------------------------
-graph_col, math_col = st.columns([1.9, 0.9], gap="small")
+graph_col, math_col = st.columns([1.8, 1], gap="small")
 with graph_col:
     st.latex(r"y=a|x-h|+k")
     xs = np.linspace(x_min, x_max, 1000)
     ys = a * np.abs(xs - h) + k
 
-    fig, ax = plt.subplots(figsize=(9, 5.6))
+    fig, ax = plt.subplots(figsize=(10, 6))
     fig.patch.set_facecolor("#202124")
     ax.set_facecolor("#202124")
     ax.plot(xs, ys, color="deepskyblue", linewidth=2.5, label=r"$y=a|x-h|+k$")
@@ -158,9 +158,13 @@ with graph_col:
     fig.tight_layout(pad=0.7)
     st.pyplot(fig, use_container_width=True)
     plt.close(fig)
-st.divider()
+
 with math_col:
-    st.markdown("**3. Explore the Mathematics**")
+    st.markdown(
+        "<div style='font-size:1rem;font-weight:700;line-height:1.2;margin:0 0 4px 0;'>"
+        "3. Explore the Mathematics</div>",
+        unsafe_allow_html=True,
+    )
     st.markdown("**Simplified Equation**")
     st.latex(rf"y={sp.latex(expr)}")
     st.markdown("<hr style='margin:3px 0;'>", unsafe_allow_html=True)
@@ -170,21 +174,25 @@ with math_col:
     st.latex(rf"y={y:g}")
     st.markdown("<hr style='margin:3px 0;'>", unsafe_allow_html=True)
     st.markdown("**Key Properties**")
+    opening_text = (
+        "Opens upward" if a > 0 else
+        "Opens downward" if a < 0 else
+        "Horizontal line"
+    )
+    range_text = (
+        f"Range: y ≥ {k:g}" if a > 0 else
+        f"Range: y ≤ {k:g}" if a < 0 else
+        f"Range: y = {k:g}"
+    )
     st.markdown(
-        f"<div style='line-height:1.25;'>"
+        f"<div style='font-size:0.88rem;line-height:1.25;'>"
         f"Vertex: ({h:g}, {k:g})<br>"
         f"Selected point: ({x:g}, {y:g})<br>"
-        f"Axis of symmetry: x = {h:g}</div>",
+        f"Axis of symmetry: x = {h:g}<br>"
+        f"{opening_text}<br>{range_text}<br>"
+        f"Domain: all real numbers.</div>",
         unsafe_allow_html=True,
     )
-    if a > 0:
-        st.markdown(f"<div style='line-height:1.25;'><br>Opens upward<br>Range: y ≥ {k:g}<br></div>", unsafe_allow_html=True)
-    elif a < 0:
-        st.markdown(f"<div style='line-height:1.25;'><br>Opens downward<br>Range: y ≤ {k:g}<br></div>", unsafe_allow_html=True)
-    else:
-        st.markdown(f"<div style='line-height:1.25;'><br>Horizontal line<br>Range: y = {k:g}<br></div>", unsafe_allow_html=True)
-        st.markdown("")
-    st.markdown("Domain: all real numbers.")
 
 # ---------------------------------------------------------
 # GAME STATE
