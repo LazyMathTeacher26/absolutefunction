@@ -281,16 +281,23 @@ st.latex(rf"y={a:g}|{x:g}-({h:g})|+({k:g})")
 st.markdown("**Simplified Equation**")
 
 X = sp.Symbol("x")
-expr = sp.simplify(a * sp.Abs(X - h) + k)
+
+# Convert whole-number decimals to integers
+a_clean = sp.nsimplify(a)
+h_clean = sp.nsimplify(h)
+k_clean = sp.nsimplify(k)
+
+expr = sp.simplify(
+    a_clean * sp.Abs(X - h_clean) + k_clean
+)
 
 # Remove unnecessary coefficient 1
-if a == 1:
-    expr = sp.Abs(X - h) + k
-elif a == -1:
-    expr = -sp.Abs(X - h) + k
+if a_clean == 1:
+    expr = sp.Abs(X - h_clean) + k_clean
+elif a_clean == -1:
+    expr = -sp.Abs(X - h_clean) + k_clean
 
 st.latex(rf"y={sp.latex(sp.simplify(expr))}")
-
 
 
 
