@@ -30,7 +30,7 @@ st.latex(r"y = a|x-h|+k")
 # ---------------------------------
 st.subheader("1. Change the value to see dynamic changes in the graph")
 
-c1, c2, c3, c4 = st.rows(4)
+c1, c2, c3, c4 = st.columns(4)
 
 with c1:
     a = st.number_input(
@@ -68,7 +68,7 @@ y = a * abs(x - h) + k
 # ---------------------------------
 st.subheader("2. Adjust the graph window")
 
-r1, r2 = st.rows(2)
+r1, r2 = st.columns(2)
 
 with r1:
     st.markdown("**Horizontal axis (x)**")
