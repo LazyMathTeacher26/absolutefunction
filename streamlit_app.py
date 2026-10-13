@@ -298,10 +298,10 @@ elif a_clean == -1:
 
 st.latex(rf"y={sp.latex(sp.simplify(expr))}")
 
-st.markdown("**Substitute the selected x-value**")
+st.markdown("**To solve for y,substitute the selected x-value**")
 st.latex(rf"y={a:g}|{x:g}-({h:g})|+({k:g})")
 
-st.markdown("**Calculate the y-value**")
+st.markdown("**Calculated y-value**")
 st.latex(rf"y={y:g}")
 
 # Display important properties
