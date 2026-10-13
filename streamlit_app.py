@@ -274,14 +274,14 @@ plt.close(fig)
 # 5. STEP-BY-STEP CALCULATIONS
 # ---------------------------------
 st.subheader("3. Explore the mathematics")
-
-st.markdown("**Equation**")
-st.latex(rf"y={a:g}|x-({h:g})|+({k:g})")
-
 st.markdown("**Substitute the selected x-value**")
-st.latex(
-    rf"y={a:g}|{x:g}-({h:g})|+({k:g})"
-)
+st.latex(rf"y={a:g}|{x:g}-({h:g})|+({k:g})")
+st.markdown("**Simplified Equation**")
+X = sp.Symbol("x")
+expr = a * sp.Abs(X - h) + k
+st.latex(rf"y={sp.latex(sp.simplify(expr))}")
+
+
 
 st.markdown("**Calculate the answer**")
 st.latex(rf"y={y:g}")
