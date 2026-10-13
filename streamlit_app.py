@@ -52,6 +52,9 @@ hr {
 div[data-testid="stImage"] {
     margin-bottom: 0 !important;
 }
+.stMarkdown p {
+    margin-bottom: 0.3rem !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -119,13 +122,13 @@ expr = sp.simplify(expr)
 # ---------------------------------------------------------
 # MAIN EXPLORER
 # ---------------------------------------------------------
-graph_col, math_col = st.columns([1.7, 1])
+graph_col, math_col = st.columns([1.9, 0.9], gap="small")
 with graph_col:
     st.latex(r"y=a|x-h|+k")
     xs = np.linspace(x_min, x_max, 1000)
     ys = a * np.abs(xs - h) + k
 
-    fig, ax = plt.subplots(figsize=(7, 4.2))
+    fig, ax = plt.subplots(figsize=(9, 5.6))
     fig.patch.set_facecolor("#202124")
     ax.set_facecolor("#202124")
     ax.plot(xs, ys, color="deepskyblue", linewidth=2.5, label=r"$y=a|x-h|+k$")
@@ -157,28 +160,29 @@ with graph_col:
     plt.close(fig)
 
 with math_col:
-    st.subheader("3. Explore the Mathematics")
+    st.markdown("**3. Explore the Mathematics**")
     st.markdown("**Simplified Equation**")
     st.latex(rf"y={sp.latex(expr)}")
-    st.divider()
+    st.markdown("<hr style='margin:3px 0;'>", unsafe_allow_html=True)
     st.markdown("**Substitution**")
     st.latex(rf"y={a:g}\left|{x:g}-({h:g})\right|+({k:g})")
     st.markdown("**Calculated y-value**")
     st.latex(rf"y={y:g}")
-    st.divider()
+    st.markdown("<hr style='margin:3px 0;'>", unsafe_allow_html=True)
     st.markdown("**Key Properties**")
-    st.write(f"Vertex: ({h:g}, {k:g})")
-    st.write(f"Selected point: ({x:g}, {y:g})")
-    st.write(f"Axis of symmetry: x = {h:g}")
+    st.markdown(
+        f"<div style='line-height:1.25;'>"
+        f"Vertex: ({h:g}, {k:g})<br>"
+        f"Selected point: ({x:g}, {y:g})<br>"
+        f"Axis of symmetry: x = {h:g}</div>",
+        unsafe_allow_html=True,
+    )
     if a > 0:
-        st.write("Opens upward")
-        st.write(f"Range: y ≥ {k:g}")
+        st.markdown(f"<div style='line-height:1.25;'>Opens upward<br>Range: y ≥ {k:g}</div>", unsafe_allow_html=True)
     elif a < 0:
-        st.write("Opens downward")
-        st.write(f"Range: y ≤ {k:g}")
+        st.markdown(f"<div style='line-height:1.25;'>Opens downward<br>Range: y ≤ {k:g}</div>", unsafe_allow_html=True)
     else:
-        st.write("Horizontal line")
-        st.write(f"Range: y = {k:g}")
+        st.markdown(f"<div style='line-height:1.25;'>Horizontal line<br>Range: y = {k:g}</div>", unsafe_allow_html=True)
     st.caption("Domain: all real numbers.")
 
 # ---------------------------------------------------------
