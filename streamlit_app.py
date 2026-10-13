@@ -164,6 +164,10 @@ with graph_col:
 
 
 # Move the mathematics panel down by 10px
+
+
+
+# Move the mathematics panel down by 10px
 st.markdown("""
 <style>
 div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
@@ -184,8 +188,10 @@ with math_col:
 
     st.markdown("<hr style='margin:3px 0;'>", unsafe_allow_html=True)
 
-	st.markdown("**Substitution**")
-	st.latex(rf"y={a:g}\left|{x:g}-({h:g})\right|+({k:g})")
+    st.markdown("**Substitution**")
+    st.latex(
+        rf"y={a:g}\left|{x:g}-({h:g})\right|+({k:g})"
+    )
 
     st.markdown("**Calculated y-value**")
     st.latex(rf"y={y:g}")
@@ -217,6 +223,7 @@ with math_col:
     )
 
 st.divider()
+
 
 # ---------------------------------------------------------
 # GAME STATE
