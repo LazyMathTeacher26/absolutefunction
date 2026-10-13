@@ -163,11 +163,22 @@ with graph_col:
 
 
 with math_col:
-    st.markdown(
-        "<div style='padding-top:10px;'>",
-        unsafe_allow_html=True,
-    )
 
+	st.markdown("""
+
+<style>
+
+/* Move the entire mathematics panel down by 10px */
+
+div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
+
+    padding-top: 10px !important;
+
+}
+
+</style>
+
+""", unsafe_allow_html=True)
     st.markdown(
         "<div style='font-size:1rem;font-weight:700;line-height:1.2;margin:0 0 4px 0;'>"
         "3. Explore the Mathematics</div>",
