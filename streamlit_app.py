@@ -183,7 +183,7 @@ with math_col:
         st.markdown(f"<div style='line-height:1.25;'><br>Opens downward<br>Range: y ≤ {k:g}<br></div>", unsafe_allow_html=True)
     else:
         st.markdown(f"<div style='line-height:1.25;'><br>Horizontal line<br>Range: y = {k:g}<br></div>", unsafe_allow_html=True)
-    st.markdown("Domain: all real numbers.")
+    st.markdown("<br>Domain: all real numbers.")
 
 # ---------------------------------------------------------
 # GAME STATE
