@@ -289,7 +289,6 @@ if not st.session_state.av_game_started:
     st.write("• 10 points for the correct opening direction")
     st.write("⏱️ You have 1 minute (60 seconds) per question.")
     st.write("")
-	st.write("")
 
     if st.button(
         "🚀 Start Game",
