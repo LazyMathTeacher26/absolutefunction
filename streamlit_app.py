@@ -555,6 +555,7 @@ with math_col:
 
 st.divider()
 
+
 # =========================================================
 # GAME STATE
 # =========================================================
@@ -584,6 +585,7 @@ for key, value in GAME_DEFAULTS.items():
     if key not in st.session_state:
         st.session_state[key] = value
 
+
 DIFFICULTY_SETTINGS = {
     "Beginner": {
         "range": 3,
@@ -597,15 +599,103 @@ DIFFICULTY_SETTINGS = {
     },
     "Master": {
         "range": 9,
-        "coefficients": [
-            -5, -4, -3, -2, -1,
-            1, 2, 3, 4, 5,
-        ],
+        "coefficients": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
         "time": 60,
     },
 }
 
 
+# =========================================================
+# EQUATION FORMATTING HELPERS
+# =========================================================
+def format_integer(value):
+    """Format integer-valued numbers without .0."""
+    value = float(value)
+    if value.is_integer():
+        return str(int(value))
+    return f"{value:g}"
+
+
+def format_absolute_equation(a, h, k, variable="x"):
+    """
+    Return standard absolute-value notation:
+    y=-2|x-5|+2
+    y=|x+3|-4
+    y=3|x|-1
+    """
+    a = int(a) if float(a).is_integer() else a
+    h = int(h) if float(h).is_integer() else h
+    k = int(k) if float(k).is_integer() else k
+
+    if h == 0:
+        inside = variable
+    elif h > 0:
+        inside = f"{variable}-{format_integer(h)}"
+    else:
+        inside = f"{variable}+{format_integer(abs(h))}"
+
+    if a == 0:
+        return f"y={format_integer(k)}"
+
+    if a == 1:
+        outside = ""
+    elif a == -1:
+        outside = "-"
+    else:
+        outside = format_integer(a)
+
+    if k > 0:
+        vertical_shift = f"+{format_integer(k)}"
+    elif k < 0:
+        vertical_shift = format_integer(k)
+    else:
+        vertical_shift = ""
+
+    return f"y={outside}|{inside}|{vertical_shift}"
+
+
+def format_calculation(a, x, h, k, y):
+    """Build a worked calculation without unnecessary parentheses."""
+    distance = abs(x - h)
+
+    def signed_subtraction(left, right):
+        if right < 0:
+            return f"{format_integer(left)}+{format_integer(abs(right))}"
+        return f"{format_integer(left)}-{format_integer(right)}"
+
+    inside = signed_subtraction(x, h)
+    a_text = format_integer(a)
+    k_text = format_integer(k)
+    y_text = format_integer(y)
+    distance_text = format_integer(distance)
+
+    if k > 0:
+        shift = f"+{k_text}"
+    elif k < 0:
+        shift = k_text
+    else:
+        shift = ""
+
+    if a == 1:
+        first = f"|{inside}|{shift}"
+        second = f"{distance_text}{shift}"
+    elif a == -1:
+        first = f"-|{inside}|{shift}"
+        second = f"-{distance_text}{shift}"
+    else:
+        first = f"{a_text}|{inside}|{shift}"
+        second = f"{a_text}\\cdot {distance_text}{shift}"
+
+    return (
+        rf"y={first}"
+        rf"={second}"
+        rf"={y_text}"
+    )
+
+
+# =========================================================
+# QUESTION GENERATION
+# =========================================================
 def generate_av_questions(difficulty):
     settings = DIFFICULTY_SETTINGS[difficulty]
     r = settings["range"]
@@ -618,6 +708,7 @@ def generate_av_questions(difficulty):
         qx = random.randint(-r, r)
 
         qy = qa * abs(qx - qh) + qk
+
         qexpr = sp.simplify(
             qa * sp.Abs(X - qh) + qk
         )
@@ -630,19 +721,23 @@ def generate_av_questions(difficulty):
             "y": qy,
             "opening": "Upward" if qa > 0 else "Downward",
             "expression": qexpr,
-            "equation_latex": sp.latex(qexpr),
+            "equation_latex": format_absolute_equation(
+                qa, qh, qk
+            ),
         })
 
     return questions
 
 
+# =========================================================
+# START / RESET GAME
+# =========================================================
 def start_new_game(difficulty):
     settings = DIFFICULTY_SETTINGS[difficulty]
 
     st.session_state.av_game_questions = (
         generate_av_questions(difficulty)
     )
-
     st.session_state.av_game_index = 0
     st.session_state.av_game_score = 0
     st.session_state.av_game_results = []
@@ -658,6 +753,9 @@ def start_new_game(difficulty):
     st.session_state.av_game_session_id += 1
 
 
+# =========================================================
+# SUBMIT ANSWER
+# =========================================================
 def submit_current_answer(
     index,
     q,
@@ -681,16 +779,15 @@ def submit_current_answer(
     )
 
     st.session_state.av_game_streak = new_streak
-
     st.session_state.av_game_best_streak = max(
         st.session_state.av_game_best_streak,
         new_streak,
     )
-
     st.session_state.av_game_score += points
 
     st.session_state.av_game_results.append({
         "expression": q["expression"],
+        "equation_latex": q["equation_latex"],
         "a": q["a"],
         "h": q["h"],
         "k": q["k"],
@@ -708,12 +805,16 @@ def submit_current_answer(
     st.session_state.av_game_status = "answered"
 
 
+# =========================================================
+# RECORD TIMEOUT
+# =========================================================
 def record_timeout(index, q):
     if len(st.session_state.av_game_results) > index:
         return
 
     st.session_state.av_game_results.append({
         "expression": q["expression"],
+        "equation_latex": q["equation_latex"],
         "a": q["a"],
         "h": q["h"],
         "k": q["k"],
@@ -742,12 +843,10 @@ if not st.session_state.av_game_started:
         "Each question is worth **20 points**: "
         "10 for the y-value and 10 for the opening direction."
     )
-
     st.write(
         "After you answer, the graph and a worked "
         "explanation will appear."
     )
-
     st.write(
         "Choose a difficulty to begin. "
         "Beginner gives you extra time."
@@ -815,15 +914,12 @@ def render_av_game():
         correct_y = sum(
             bool(r["y_correct"]) for r in results
         )
-
         correct_opening = sum(
             bool(r["opening_correct"]) for r in results
         )
-
         perfect = sum(
             r["points"] == 20 for r in results
         )
-
         timeouts = sum(
             bool(r["timed_out"]) for r in results
         )
@@ -861,7 +957,6 @@ def render_av_game():
         """, unsafe_allow_html=True)
 
         m1, m2, m3, m4 = st.columns(4)
-
         m1.metric("Final Score", f"{score} / {max_score}")
         m2.metric("Percentage", f"{percentage}%")
         m3.metric("Perfect Questions", f"{perfect} / {total_questions}")
@@ -875,17 +970,11 @@ def render_av_game():
         st.markdown("### 📊 Your Learning Report")
 
         l1, l2, l3 = st.columns(3)
-
-        l1.metric(
-            "Y-values correct",
-            f"{correct_y} / {total_questions}",
-        )
-
+        l1.metric("Y-values correct", f"{correct_y} / {total_questions}")
         l2.metric(
             "Opening correct",
             f"{correct_opening} / {total_questions}",
         )
-
         l3.metric("Timed out", timeouts)
 
         needs_y = correct_y < total_questions
@@ -918,7 +1007,9 @@ def render_av_game():
             f"{st.session_state.av_game_best_streak}."
         )
 
-        # Review questions and worked solutions
+        # -------------------------------------------------
+        # REVIEW ALL QUESTIONS
+        # -------------------------------------------------
         with st.expander(
             "📘 Review all 10 questions and worked solutions",
             expanded=True,
@@ -928,10 +1019,7 @@ def render_av_game():
                     f"**Question {i} — {result['points']} / 20 points**"
                 )
 
-                st.latex(
-                    rf"y={sp.latex(result['expression'])}"
-                )
-
+                st.latex(result["equation_latex"])
                 st.write(f"Given x = {result['x']}")
 
                 student_y_text = (
@@ -944,7 +1032,6 @@ def render_av_game():
                 st.write(
                     f"Your opening: {result['student_opening']}"
                 )
-
                 st.write(f"Correct y-value: {result['y']}")
                 st.write(f"Correct opening: {result['opening']}")
 
@@ -956,12 +1043,13 @@ def render_av_game():
                 )
 
                 st.latex(
-                    rf"y={result['a']}|{result['x']}-({result['h']})|"
-                    rf"+({result['k']})"
-                    rf"={result['a']}\cdot "
-                    rf"{abs(result['x']-result['h'])}"
-                    rf"+({result['k']})"
-                    rf"={result['y']}"
+                    format_calculation(
+                        result["a"],
+                        result["x"],
+                        result["h"],
+                        result["k"],
+                        result["y"],
+                    )
                 )
 
                 gx = np.linspace(
@@ -969,7 +1057,6 @@ def render_av_game():
                     result["h"] + 6,
                     300,
                 )
-
                 gy = (
                     result["a"]
                     * np.abs(gx - result["h"])
@@ -977,7 +1064,6 @@ def render_av_game():
                 )
 
                 fig2, ax2 = plt.subplots(figsize=(5, 2.5))
-
                 fig2.patch.set_facecolor("#101A2D")
                 ax2.set_facecolor("#172338")
 
@@ -988,36 +1074,40 @@ def render_av_game():
                     linewidth=2,
                     label="Function",
                 )
-
                 ax2.axvline(
                     result["h"],
                     color="lime",
                     linestyle=":",
                     linewidth=1.5,
-                    label=f"Symmetry x={result['h']}",
+                    label=f"Symmetry x={format_integer(result['h'])}",
                 )
-
                 ax2.scatter(
                     [result["h"]],
                     [result["k"]],
                     color="red",
                     s=45,
-                    label=f"Vertex ({result['h']}, {result['k']})",
+                    label=(
+                        f"Vertex "
+                        f"({format_integer(result['h'])}, "
+                        f"{format_integer(result['k'])})"
+                    ),
                 )
-
                 ax2.scatter(
                     [result["x"]],
                     [result["y"]],
                     color="orange",
                     s=45,
-                    label=f"Point ({result['x']}, {result['y']})",
+                    label=(
+                        f"Point "
+                        f"({format_integer(result['x'])}, "
+                        f"{format_integer(result['y'])})"
+                    ),
                 )
 
                 ax2.set_title(
                     f"Question {i}: graph reveal",
                     color="white",
                 )
-
                 ax2.tick_params(colors="white")
                 ax2.grid(True, alpha=0.25)
 
@@ -1025,21 +1115,17 @@ def render_av_game():
                     spine.set_color("white")
 
                 legend2 = ax2.legend(fontsize=7)
-
                 for label in legend2.get_texts():
                     label.set_color("white")
 
                 fig2.tight_layout()
-
-                st.pyplot(
-                    fig2,
-                    use_container_width=True,
-                )
-
+                st.pyplot(fig2, use_container_width=True)
                 plt.close(fig2)
                 st.divider()
 
-        # Achievement certificate
+        # -------------------------------------------------
+        # ACHIEVEMENT CERTIFICATE
+        # -------------------------------------------------
         st.markdown("### 🎓 Achievement Certificate")
 
         st.markdown(f"""
@@ -1083,9 +1169,7 @@ def render_av_game():
                 use_container_width=True,
                 type="primary",
             ):
-                start_new_game(
-                    st.session_state.av_game_difficulty
-                )
+                start_new_game(st.session_state.av_game_difficulty)
                 st.rerun()
 
         with c2:
@@ -1116,9 +1200,9 @@ def render_av_game():
     if status == "playing" and remaining <= 0:
         record_timeout(index, q)
         st.rerun()
+        return
 
     status = st.session_state.av_game_status
-
     remaining = max(
         0,
         math.ceil(
@@ -1129,27 +1213,13 @@ def render_av_game():
     st.markdown(
         f"### ✏️ Question {index + 1} of {total_questions}"
     )
-
     st.progress(index / total_questions)
 
     m1, m2, m3, m4 = st.columns(4)
-
-    m1.metric(
-        "Question",
-        f"{index + 1}/{total_questions}",
-    )
-
+    m1.metric("Question", f"{index + 1}/{total_questions}")
     m2.metric("Time Left", f"{remaining}s")
-
-    m3.metric(
-        "Score",
-        st.session_state.av_game_score,
-    )
-
-    m4.metric(
-        "🔥 Current Streak",
-        st.session_state.av_game_streak,
-    )
+    m3.metric("Score", st.session_state.av_game_score)
+    m4.metric("🔥 Current Streak", st.session_state.av_game_streak)
 
     if status == "playing" and remaining <= 10:
         st.warning("⏰ Final seconds! Check your answer.")
@@ -1177,14 +1247,12 @@ def render_av_game():
     </div>
     """, unsafe_allow_html=True)
 
-    # Question equation and given x-value
-    st.latex(
-        rf"y={q['a']} \left|x-({q['h']})\right|+({q['k']})"
-    )
-
-    st.markdown(
-        f"**Given:** \\(x={q['x']}\\)"
-    )
+    # -----------------------------------------------------
+    # STANDARD ABSOLUTE-VALUE EQUATION
+    # No unnecessary parentheses around h or k.
+    # -----------------------------------------------------
+    st.latex(q["equation_latex"])
+    st.markdown(f"**Given:** \\(x={q['x']}\\)")
 
     st.caption(
         "Hint: calculate the absolute value first, "
@@ -1242,9 +1310,9 @@ def render_av_game():
     # ANSWER FEEDBACK AND GRAPH REVEAL
     # -----------------------------------------------------
     elif status in ("answered", "timeout"):
-        if status == "answered":
-            result = st.session_state.av_game_results[index]
+        result = st.session_state.av_game_results[index]
 
+        if status == "answered":
             if result["points"] == 20:
                 st.success(
                     "🎉 Perfect! Both answers are correct!"
@@ -1262,37 +1330,32 @@ def render_av_game():
                     "👍 One part is correct. Review the explanation "
                     "and keep going!"
                 )
-
             else:
                 st.warning(
                     "💡 This one is a learning opportunity. "
                     "Check the steps below."
                 )
 
-            st.metric(
-                "Points earned",
-                f"{result['points']} / 20",
-            )
+            st.metric("Points earned", f"{result['points']} / 20")
 
         else:
-            result = st.session_state.av_game_results[index]
-
             st.warning(
                 "⏰ Time is up for this question. "
                 "Use the solution to learn the steps."
             )
 
         st.markdown("**Answer and explanation**")
-
         st.write(f"Correct y-value: **{q['y']}**")
         st.write(f"Correct opening: **{q['opening']}**")
 
-        # Worked calculation
         st.latex(
-            rf"y={q['a']}|{q['x']}-({q['h']})|+({q['k']})"
-            rf"={q['a']}\cdot "
-            rf"{abs(q['x']-q['h'])}+({q['k']})"
-            rf"={q['y']}"
+            format_calculation(
+                q["a"],
+                q["x"],
+                q["h"],
+                q["k"],
+                q["y"],
+            )
         )
 
         # Graph reveal
@@ -1301,13 +1364,9 @@ def render_av_game():
             q["h"] + 6,
             300,
         )
-
-        gy = (
-            q["a"] * np.abs(gx - q["h"]) + q["k"]
-        )
+        gy = q["a"] * np.abs(gx - q["h"]) + q["k"]
 
         fig3, ax3 = plt.subplots(figsize=(7, 3.4))
-
         fig3.patch.set_facecolor("#101A2D")
         ax3.set_facecolor("#172338")
 
@@ -1318,41 +1377,39 @@ def render_av_game():
             linewidth=2.5,
             label="Function",
         )
-
         ax3.axvline(
             q["h"],
             color="lime",
             linestyle=":",
             linewidth=2,
-            label=f"Line of symmetry x={q['h']}",
+            label=f"Line of symmetry x={format_integer(q['h'])}",
         )
-
         ax3.scatter(
             [q["h"]],
             [q["k"]],
             color="red",
             s=75,
             zorder=4,
-            label=f"Vertex ({q['h']}, {q['k']})",
+            label=(
+                f"Vertex ({format_integer(q['h'])}, "
+                f"{format_integer(q['k'])})"
+            ),
         )
-
         ax3.scatter(
             [q["x"]],
             [q["y"]],
             color="orange",
             s=75,
             zorder=5,
-            label=f"Point ({q['x']}, {q['y']})",
+            label=(
+                f"Point ({format_integer(q['x'])}, "
+                f"{format_integer(q['y'])})"
+            ),
         )
 
         ax3.set_xlabel("x", color="white")
         ax3.set_ylabel("y", color="white")
-
-        ax3.set_title(
-            "Stingray Graph Reveal",
-            color="white",
-        )
-
+        ax3.set_title("Stingray Graph Reveal", color="white")
         ax3.tick_params(colors="white")
         ax3.grid(True, alpha=0.25)
 
@@ -1360,17 +1417,11 @@ def render_av_game():
             spine.set_color("white")
 
         legend3 = ax3.legend(fontsize=8)
-
         for label in legend3.get_texts():
             label.set_color("white")
 
         fig3.tight_layout()
-
-        st.pyplot(
-            fig3,
-            use_container_width=True,
-        )
-
+        st.pyplot(fig3, use_container_width=True)
         plt.close(fig3)
 
         if st.button(
@@ -1390,6 +1441,11 @@ def render_av_game():
             )
             st.rerun()
 
+
+# =========================================================
+# RUN THE GAME
+# =========================================================
+render_av_game()
 
 # =========================================================
 # RUN THE GAME
