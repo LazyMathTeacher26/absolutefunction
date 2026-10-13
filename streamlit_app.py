@@ -205,119 +205,166 @@ with math_col:
     st.caption("Domain: all real numbers.")
 
 
+
 # ---------------------------------
-# 6. GAMIFIED ABSOLUTE VALUE CHALLENGE
+# 6. GAMIFIED FUNCTION CHALLENGE
 # ---------------------------------
 st.markdown("---")
-st.subheader("🎮 Absolute Value Challenge: Become a Distance Detective!")
+st.subheader("🎮 Absolute Value Mission")
 
 st.caption(
-    "Remember: absolute value is distance from zero, "
-    "so the answer can never be negative."
+    "Explore the function, predict its shape, "
+    "and substitute x-values to earn points!"
 )
 
-# Initialize game state
-if "av_score" not in st.session_state:
-    st.session_state.av_score = 0
+# Current function from the main controls
+st.markdown("**Your function**")
+st.latex(rf"y={a:g}|x-({h:g})|+({k:g})")
 
-if "av_question" not in st.session_state:
-    st.session_state.av_question = 0
+# Game state
+if "function_score" not in st.session_state:
+    st.session_state.function_score = 0
 
-if "av_answered" not in st.session_state:
-    st.session_state.av_answered = False
+if "function_round" not in st.session_state:
+    st.session_state.function_round = 0
 
-if "av_feedback" not in st.session_state:
-    st.session_state.av_feedback = ""
+if "function_feedback" not in st.session_state:
+    st.session_state.function_feedback = {}
 
-if "av_target" not in st.session_state:
-    st.session_state.av_target = -7
+# Three compact game columns
+game1, game2, game3 = st.columns([1, 1, 1])
 
-if "av_choices" not in st.session_state:
-    st.session_state.av_choices = [7, -7, 0, 14]
+# ---------------------------------
+# CHALLENGE 1: OPENING DIRECTION
+# ---------------------------------
+with game1:
+    st.markdown("**🚀 Challenge 1: Opening**")
 
-# Compact game layout
-game_col, hint_col, score_col = st.columns([2, 1.5, 1])
+    st.write("Which way does your graph open?")
 
-with game_col:
-    st.markdown("**🕵️ Mission: Find the distance!**")
+    opening_options = [
+        "Upward",
+        "Downward",
+        "Horizontal"
+    ]
 
-    target = st.session_state.av_target
-
-    st.latex(rf"\left|{target}\right|=?")
-
-    answer = st.radio(
-        "Choose your answer:",
-        options=st.session_state.av_choices,
-        key=f"av_choice_{st.session_state.av_question}",
-        horizontal=True,
-        label_visibility="collapsed",
-        disabled=st.session_state.av_answered
+    opening_answer = st.radio(
+        "Choose the direction",
+        opening_options,
+        key=f"opening_{st.session_state.function_round}",
+        label_visibility="collapsed"
     )
 
-    if not st.session_state.av_answered:
-        if st.button("🚀 Check Answer", key="av_check"):
-            st.session_state.av_answered = True
+    if st.button(
+        "Check opening",
+        key=f"check_opening_{st.session_state.function_round}"
+    ):
+        correct_opening = (
+            "Upward" if a > 0
+            else "Downward" if a < 0
+            else "Horizontal"
+        )
 
-            if answer == abs(target):
-                st.session_state.av_score += 10
-                st.session_state.av_feedback = (
-                    "✅ Correct! You earned 10 points!"
-                )
-            else:
-                st.session_state.av_feedback = (
-                    f"💡 Not quite! |{target}| = {abs(target)} "
-                    "because distance is nonnegative."
-                )
-            st.rerun()
-    else:
-        st.info(st.session_state.av_feedback)
+        if opening_answer == correct_opening:
+            st.session_state.function_score += 10
+            st.session_state.function_feedback["opening"] = (
+                f"✅ Correct! a = {a:g}."
+            )
+        else:
+            st.session_state.function_feedback["opening"] = (
+                f"💡 The graph opens {correct_opening.lower()}. "
+                f"The value of a is {a:g}."
+            )
 
-        if st.button("🎯 Next Challenge", key="av_next"):
-            questions = [-9, 6, -4, 12, -2, 0, 8, -11, 5]
-            next_index = (
-                st.session_state.av_question + 1
-            ) % len(questions)
+    if "opening" in st.session_state.function_feedback:
+        st.info(st.session_state.function_feedback["opening"])
 
-            st.session_state.av_question = next_index
-            new_target = questions[next_index]
-            st.session_state.av_target = new_target
+# ---------------------------------
+# CHALLENGE 2: SUBSTITUTE X
+# ---------------------------------
+with game2:
+    st.markdown("**🧮 Challenge 2: Substitute**")
 
-            correct = abs(new_target)
-            distractors = [
-                -correct,
-                correct + 2,
-                max(0, correct - 1)
-            ]
+    challenge_x = st.number_input(
+        "Choose an x-value",
+        value=2.0,
+        step=1.0,
+        key="challenge_x"
+    )
 
-            choices = list(dict.fromkeys(
-                [correct] + distractors
-            ))
+    correct_y = a * abs(challenge_x - h) + k
 
-            while len(choices) < 4:
-                candidate = max(0, correct + len(choices) + 2)
-                if candidate not in choices:
-                    choices.append(candidate)
+    st.latex(
+        rf"y={a:g}|{challenge_x:g}-({h:g})|+({k:g})"
+    )
 
-            st.session_state.av_choices = choices[:4]
-            st.session_state.av_answered = False
-            st.session_state.av_feedback = ""
-            st.rerun()
+    student_y = st.number_input(
+        "What is y?",
+        value=0.0,
+        step=1.0,
+        key="challenge_y"
+    )
 
-with hint_col:
-    st.markdown("**🧠 Detective Hint**")
-    st.write("Ask yourself: How far is the number from zero?")
-    st.write("Distance is always zero or positive.")
+    if st.button("Check y", key="check_y"):
+        if np.isclose(student_y, correct_y):
+            st.session_state.function_score += 10
+            st.session_state.function_feedback["substitution"] = (
+                "✅ Correct! You earned 10 points."
+            )
+        else:
+            st.session_state.function_feedback["substitution"] = (
+                f"💡 Try again. The correct value is "
+                f"y = {correct_y:g}."
+            )
 
-with score_col:
-    st.markdown("**🏆 Score**")
-    st.metric("Points", st.session_state.av_score)
-    st.caption("10 points per correct answer")
+    if "substitution" in st.session_state.function_feedback:
+        st.info(st.session_state.function_feedback["substitution"])
 
-    if st.button("🔄 Reset Game", key="av_reset"):
-        st.session_state.av_score = 0
-        st.session_state.av_question = 0
-        st.session_state.av_target = -7
-        st.session_state.av_choices = [7, -7, 0, 14]
-        st.session_state.av_answered = False
-        st.session_state.av_feedback = ""
+# ---------------------------------
+# CHALLENGE 3: VERTEX AND SCORE
+# ---------------------------------
+with game3:
+    st.markdown("**🏆 Challenge 3: Function Facts**")
+
+    st.write(f"Vertex: ({h:g}, {k:g})")
+    st.write(f"Symmetry line: x = {h:g}")
+
+    st.write(
+        "The vertex is the turning point "
+        "of the absolute value graph."
+    )
+
+    st.metric("Total points", st.session_state.function_score)
+
+    st.caption("Earn 10 points for each correct answer.")
+
+    if st.button("🔄 New Round", key="new_function_round"):
+        st.session_state.function_round += 1
+        st.session_state.function_feedback = {}
         st.rerun()
+
+    if st.button("Reset Score", key="reset_function_score"):
+        st.session_state.function_score = 0
+        st.session_state.function_round += 1
+        st.session_state.function_feedback = {}
+        st.rerun()
+
+# ---------------------------------
+# STEP-BY-STEP EXPLANATION
+# ---------------------------------
+with st.expander("💡 Reveal the substitution steps"):
+    st.write("1. Start with the function:")
+    st.latex(r"y=a|x-h|+k")
+
+    st.write("2. Substitute the selected x-value:")
+    st.latex(
+        rf"y={a:g}|{challenge_x:g}-({h:g})|+({k:g})"
+    )
+
+    st.write("3. Evaluate the absolute value:")
+    st.latex(
+        rf"y={a:g}\times{abs(challenge_x-h):g}+({k:g})"
+    )
+
+    st.write("4. Multiply and add:")
+    st.latex(rf"y={correct_y:g}")
