@@ -14,94 +14,73 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# STYLING
+# COMPACT PAGE STYLE + TOP HEADING
 # ---------------------------------------------------------
 st.markdown("""
-
 <style>
-
+/* Remove excess top whitespace while leaving Streamlit controls usable */
+.stAppViewBlockContainer,
 .block-container {
-
-    padding-top: 0.5rem !important;
-
-    padding-bottom: 0.5rem !important;
-
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.45rem !important;
 }
 
+/* Streamlit's header can reserve space even when visually empty */
 header[data-testid="stHeader"] {
-
     height: 0rem !important;
-
     min-height: 0rem !important;
-
 }
 
+/* Compact vertical spacing */
 div[data-testid="stVerticalBlock"] {
-
-    gap: 0.5rem;
-
+    gap: 0.45rem;
 }
 
+/* Reduce heading margins */
+h1, h2, h3 {
+    margin-top: 0.1rem !important;
+    margin-bottom: 0.25rem !important;
+}
+
+/* Compact horizontal rules */
+hr {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+}
+
+/* Keep plot images from adding extra bottom whitespace */
+div[data-testid="stImage"] {
+    margin-bottom: 0 !important;
+}
 </style>
+""", unsafe_allow_html=True)
 
+# Render the heading as the FIRST visible element, before all page content.
+# A single HTML block avoids extra height from Streamlit columns/title widgets.
+st.markdown("""
 <div style="
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    gap: 12px;
-
-    width: 100%;
-
-    margin: 0 0 8px 0;
-
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    width:100%;
+    margin:0 0 5px 0;
+    padding:0;
 ">
-
-    <div style="flex: 1; min-width: 0;">
-
-        <div style="font-size: 1.6rem; font-weight: 700; line-height: 1.2;">
-
-            📐 Interactive Absolute Value Explorer
-
-        </div>
-
-        <div style="font-size: 0.85rem; color: #888; margin-top: 4px;">
-
-            Explore, experiment, and master absolute value functions.
-
-        </div>
-
+  <div style="flex:1 1 auto; min-width:0;">
+    <div style="font-size:clamp(1.15rem, 2.2vw, 1.65rem); font-weight:750; line-height:1.15;">
+      📐 Interactive Absolute Value Explorer
     </div>
-
-    <div style="
-
-        flex: 0 0 auto;
-
-        text-align: right;
-
-        line-height: 1.25;
-
-        font-size: 0.8rem;
-
-    ">
-
-        <strong>Shirhan A. Biottong</strong><br>
-
-        <em>Algebra 1 Teacher</em><br>
-
-        <span style="font-size: 0.65rem; color: #888;">
-
-            Atlantic Coast High School
-
-        </span>
-
+    <div style="font-size:0.82rem; color:var(--text-color); opacity:0.72; margin-top:3px;">
+      Explore, experiment, and master absolute value functions.
     </div>
-
+  </div>
+  <div style="flex:0 0 auto; text-align:right; line-height:1.2; font-size:0.78rem;">
+    <strong>Shirhan A. Biottong</strong><br>
+    <em>Algebra 1 Teacher</em><br>
+    <span style="font-size:0.65rem; opacity:0.72;">Atlantic Coast High School</span>
+  </div>
 </div>
-
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
@@ -146,7 +125,7 @@ with graph_col:
     xs = np.linspace(x_min, x_max, 1000)
     ys = a * np.abs(xs - h) + k
 
-    fig, ax = plt.subplots(figsize=(7, 4.8))
+    fig, ax = plt.subplots(figsize=(7, 4.2))
     fig.patch.set_facecolor("#202124")
     ax.set_facecolor("#202124")
     ax.plot(xs, ys, color="deepskyblue", linewidth=2.5, label=r"$y=a|x-h|+k$")
@@ -201,6 +180,7 @@ with math_col:
         st.write("Horizontal line")
         st.write(f"Range: y = {k:g}")
     st.caption("Domain: all real numbers.")
+
 # ---------------------------------------------------------
 # GAME STATE
 # ---------------------------------------------------------
@@ -266,7 +246,6 @@ def start_new_game(difficulty):
     st.session_state.av_game_session_id += 1
 
 def submit_current_answer(index, q, student_y, student_opening):
-    # Guard against duplicate submissions if a rerun occurs.
     if len(st.session_state.av_game_results) > index:
         return
     y_correct = int(student_y) == int(q["y"])
@@ -321,8 +300,6 @@ if not st.session_state.av_game_started:
         "Master": "Advanced challenge • larger coefficients and shifts • 60 seconds per question",
     }
     st.info(descriptions[difficulty])
-    st.write("")
-    st.write("")
     if st.button("🚀 Start Game", key="av_start_game", use_container_width=True, type="primary"):
         start_new_game(difficulty)
         st.rerun()
@@ -339,7 +316,6 @@ def render_av_game():
     index = st.session_state.av_game_index
     total_questions = len(questions)
 
-    # Results / achievement screen
     if index >= total_questions:
         results = st.session_state.av_game_results
         score = st.session_state.av_game_score
@@ -408,13 +384,11 @@ def render_av_game():
                     f"Feedback: y-value {'correct' if result['y_correct'] else 'review needed'}; "
                     f"opening {'correct' if result['opening_correct'] else 'review needed'}."
                 )
-                # Explicit substitution explanation
                 st.latex(
                     rf"y={result['a']}|{result['x']}-({result['h']})|+({result['k']})"
                     rf"={result['a']}\cdot {abs(result['x']-result['h'])}+({result['k']})"
                     rf"={result['y']}"
                 )
-                # A small graph for each reviewed question
                 gx = np.linspace(result["h"] - 6, result["h"] + 6, 300)
                 gy = result["a"] * np.abs(gx - result["h"]) + result["k"]
                 fig2, ax2 = plt.subplots(figsize=(5, 2.5))
@@ -430,7 +404,6 @@ def render_av_game():
                 plt.close(fig2)
                 st.divider()
 
-        # Certificate printable via browser print
         st.markdown("### 🎓 Achievement Certificate")
         st.markdown(f"""
         <div class="game-card" style="text-align:center;border:2px solid #D4AF37;">
@@ -460,8 +433,6 @@ def render_av_game():
 
     q = questions[index]
     status = st.session_state.av_game_status
-
-    # Timeout: record once, then rerun to render feedback safely
     remaining = max(0, math.ceil(st.session_state.av_game_deadline - time.time()))
     if status == "playing" and remaining <= 0:
         record_timeout(index, q)
@@ -478,7 +449,6 @@ def render_av_game():
     m3.metric("Score", st.session_state.av_game_score)
     m4.metric("🔥 Current Streak", st.session_state.av_game_streak)
 
-    # Warning for low time
     if status == "playing" and remaining <= 10:
         st.warning("⏰ Final seconds! Check your answer.")
 
@@ -526,7 +496,6 @@ def render_av_game():
             rf"={q['y']}"
         )
 
-        # Graph reveal after answer or timeout
         gx = np.linspace(q["h"] - 6, q["h"] + 6, 300)
         gy = q["a"] * np.abs(gx - q["h"]) + q["k"]
         fig3, ax3 = plt.subplots(figsize=(7, 3.4))
