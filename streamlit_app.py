@@ -206,22 +206,19 @@ with math_col:
 
 
 
+
 # ---------------------------------
-# 6. GAMIFIED FUNCTION CHALLENGE
+# 6. GAMIFIED ABSOLUTE VALUE MISSION
 # ---------------------------------
+
 st.markdown("---")
 st.subheader("🎮 Absolute Value Mission")
-
 st.caption(
-    "Explore the function, predict its shape, "
+    "Explore the function, predict its opening, "
     "and substitute x-values to earn points!"
 )
 
-# Current function from the main controls
-st.markdown("**Your function**")
-st.latex(rf"y={a:g}|x-({h:g})|+({k:g})")
-
-# Game state
+# Initialize game state
 if "function_score" not in st.session_state:
     st.session_state.function_score = 0
 
@@ -231,56 +228,74 @@ if "function_round" not in st.session_state:
 if "function_feedback" not in st.session_state:
     st.session_state.function_feedback = {}
 
-# Three compact game columns
-game1, game2, game3 = st.columns([1, 1, 1])
+if "function_attempts" not in st.session_state:
+    st.session_state.function_attempts = set()
+
+# ---------------------------------
+# DISPLAY SIMPLIFIED FUNCTION
+# ---------------------------------
+st.markdown("**Your simplified function**")
+st.latex(rf"y={sp.latex(expr)}")
+
+# ---------------------------------
+# THREE COMPACT GAME COLUMNS
+# ---------------------------------
+game1, game2, game3 = st.columns([1, 1.2, 1])
 
 # ---------------------------------
 # CHALLENGE 1: OPENING DIRECTION
 # ---------------------------------
 with game1:
     st.markdown("**🚀 Challenge 1: Opening**")
-
     st.write("Which way does your graph open?")
 
-    opening_options = [
-        "Upward",
-        "Downward",
-        "Horizontal"
-    ]
+    opening_options = ["Upward", "Downward", "Horizontal"]
+
+    opening_key = f"opening_answer_{st.session_state.function_round}"
 
     opening_answer = st.radio(
         "Choose the direction",
         opening_options,
-        key=f"opening_{st.session_state.function_round}",
+        key=opening_key,
         label_visibility="collapsed"
+    )
+
+    opening_id = (
+        st.session_state.function_round,
+        "opening"
     )
 
     if st.button(
         "Check opening",
-        key=f"check_opening_{st.session_state.function_round}"
+        key=f"check_opening_{st.session_state.function_round}",
+        use_container_width=True
     ):
-        correct_opening = (
-            "Upward" if a > 0
-            else "Downward" if a < 0
-            else "Horizontal"
-        )
+        if opening_id not in st.session_state.function_attempts:
+            correct_opening = (
+                "Upward" if a > 0
+                else "Downward" if a < 0
+                else "Horizontal"
+            )
 
-        if opening_answer == correct_opening:
-            st.session_state.function_score += 10
-            st.session_state.function_feedback["opening"] = (
-                f"✅ Correct! a = {a:g}."
-            )
-        else:
-            st.session_state.function_feedback["opening"] = (
-                f"💡 The graph opens {correct_opening.lower()}. "
-                f"The value of a is {a:g}."
-            )
+            if opening_answer == correct_opening:
+                st.session_state.function_score += 10
+                st.session_state.function_feedback["opening"] = (
+                    f"✅ Correct! Since a = {a:g}, "
+                    f"the graph opens {correct_opening.lower()}."
+                )
+            else:
+                st.session_state.function_feedback["opening"] = (
+                    f"💡 The graph opens {correct_opening.lower()}. "
+                    f"Look at the sign of a = {a:g}."
+                )
+
+            st.session_state.function_attempts.add(opening_id)
 
     if "opening" in st.session_state.function_feedback:
         st.info(st.session_state.function_feedback["opening"])
 
 # ---------------------------------
-# CHALLENGE 2: SUBSTITUTE X
+# CHALLENGE 2: SUBSTITUTE AN X-VALUE
 # ---------------------------------
 with game2:
     st.markdown("**🧮 Challenge 2: Substitute**")
@@ -289,82 +304,121 @@ with game2:
         "Choose an x-value",
         value=2.0,
         step=1.0,
-        key="challenge_x"
+        key="game_challenge_x"
     )
 
     correct_y = a * abs(challenge_x - h) + k
 
+    # Simplified substitution display
+    st.markdown("**Substitute into the function**")
     st.latex(
-        rf"y={a:g}|{challenge_x:g}-({h:g})|+({k:g})"
+        rf"y={a:g}\left|{challenge_x:g}-({h:g})\right|+({k:g})"
     )
 
     student_y = st.number_input(
         "What is y?",
         value=0.0,
         step=1.0,
-        key="challenge_y"
+        key=f"game_answer_{st.session_state.function_round}"
     )
 
-    if st.button("Check y", key="check_y"):
-        if np.isclose(student_y, correct_y):
-            st.session_state.function_score += 10
-            st.session_state.function_feedback["substitution"] = (
-                "✅ Correct! You earned 10 points."
-            )
-        else:
-            st.session_state.function_feedback["substitution"] = (
-                f"💡 Try again. The correct value is "
-                f"y = {correct_y:g}."
-            )
+    substitution_id = (
+        st.session_state.function_round,
+        "substitution"
+    )
+
+    if st.button(
+        "Check y",
+        key=f"check_y_{st.session_state.function_round}",
+        use_container_width=True
+    ):
+        if substitution_id not in st.session_state.function_attempts:
+            if np.isclose(student_y, correct_y):
+                st.session_state.function_score += 10
+                st.session_state.function_feedback["substitution"] = (
+                    f"✅ Correct! y = {correct_y:g}. "
+                    "You earned 10 points!"
+                )
+            else:
+                st.session_state.function_feedback["substitution"] = (
+                    "💡 Try again. Remember to evaluate the "
+                    "absolute value first."
+                )
+
+            st.session_state.function_attempts.add(substitution_id)
 
     if "substitution" in st.session_state.function_feedback:
         st.info(st.session_state.function_feedback["substitution"])
 
 # ---------------------------------
-# CHALLENGE 3: VERTEX AND SCORE
+# CHALLENGE 3: FUNCTION FACTS AND SCORE
 # ---------------------------------
 with game3:
     st.markdown("**🏆 Challenge 3: Function Facts**")
 
-    st.write(f"Vertex: ({h:g}, {k:g})")
-    st.write(f"Symmetry line: x = {h:g}")
+    st.caption(f"Vertex: ({h:g}, {k:g})")
+    st.caption(f"Symmetry: x = {h:g}")
 
-    st.write(
-        "The vertex is the turning point "
-        "of the absolute value graph."
+    if a > 0:
+        st.caption("↗ Opens upward")
+        st.caption(f"Range: y ≥ {k:g}")
+    elif a < 0:
+        st.caption("↘ Opens downward")
+        st.caption(f"Range: y ≤ {k:g}")
+    else:
+        st.caption("— Horizontal line")
+        st.caption(f"Range: y = {k:g}")
+
+    st.metric(
+        "Total points",
+        st.session_state.function_score
     )
 
-    st.metric("Total points", st.session_state.function_score)
+    st.caption("10 points per correct challenge.")
 
-    st.caption("Earn 10 points for each correct answer.")
-
-    if st.button("🔄 New Round", key="new_function_round"):
+    if st.button(
+        "🔄 New Round",
+        key="new_function_round",
+        use_container_width=True
+    ):
         st.session_state.function_round += 1
         st.session_state.function_feedback = {}
         st.rerun()
 
-    if st.button("Reset Score", key="reset_function_score"):
+    if st.button(
+        "Reset Score",
+        key="reset_function_score",
+        use_container_width=True
+    ):
         st.session_state.function_score = 0
         st.session_state.function_round += 1
         st.session_state.function_feedback = {}
+        st.session_state.function_attempts = set()
         st.rerun()
 
 # ---------------------------------
-# STEP-BY-STEP EXPLANATION
+# STEP-BY-STEP SOLUTION
 # ---------------------------------
 with st.expander("💡 Reveal the substitution steps"):
-    st.write("1. Start with the function:")
+    st.markdown("**Step 1: Start with the function**")
     st.latex(r"y=a|x-h|+k")
 
-    st.write("2. Substitute the selected x-value:")
+    st.markdown("**Step 2: Substitute the selected x-value**")
     st.latex(
-        rf"y={a:g}|{challenge_x:g}-({h:g})|+({k:g})"
+        rf"y={a:g}\left|{challenge_x:g}-({h:g})\right|+({k:g})"
     )
 
-    st.write("3. Evaluate the absolute value:")
+    st.markdown("**Step 3: Evaluate the absolute value**")
     st.latex(
         rf"y={a:g}\times{abs(challenge_x-h):g}+({k:g})"
     )
 
-    st.write("4. Multiply and add:")
+    st.markdown("**Step 4: Multiply and add**")
     st.latex(rf"y={correct_y:g}")
+
+    st.markdown("**Remember:**")
+    st.write(
+        "The sign of a determines the opening direction. "
+        "The vertex is (h, k), and the axis of symmetry is x = h."
+    )
+
