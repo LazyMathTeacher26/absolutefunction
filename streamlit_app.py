@@ -57,7 +57,7 @@ with c3:
 with c4:
     x = st.number_input(
         "x (input point)",
-        value=2.0,
+        value=0.0,
         step=1.0
     )
 
