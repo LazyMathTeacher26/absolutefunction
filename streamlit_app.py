@@ -85,6 +85,7 @@ st.markdown("""
   </div>
 </div>
 """, unsafe_allow_html=True)
+    st.divider()
 
 # ---------------------------------------------------------
 # SIDEBAR: INTERACTIVE FUNCTION CONTROLS
@@ -193,7 +194,7 @@ with math_col:
         f"Domain: all real numbers.</div>",
         unsafe_allow_html=True,
     )
-
+ st.divider()
 # ---------------------------------------------------------
 # GAME STATE
 # ---------------------------------------------------------
