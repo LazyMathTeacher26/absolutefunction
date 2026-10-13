@@ -17,26 +17,91 @@ st.set_page_config(
 # STYLING
 # ---------------------------------------------------------
 st.markdown("""
+
 <style>
+
 .block-container {
-    padding-top: 0.45rem;
-    padding-bottom: 1rem;
-    padding-left: 0.8rem;
-    padding-right: 0.8rem;
+
+    padding-top: 0.5rem !important;
+
+    padding-bottom: 0.5rem !important;
+
 }
-h1 {font-size: 1.6rem !important; margin: 0 !important;}
-h2, h3 {font-size: 1.08rem !important; margin: 0.25rem 0 !important;}
-p {margin-bottom: 0.2rem !important;}
-div[data-testid="stVerticalBlock"] {gap: 0.4rem;}
-div[data-testid="stMetric"] {padding: 0.25rem;}
-.game-card {
-    padding: 0.8rem 1rem;
-    border: 1px solid rgba(128,128,128,0.35);
-    border-radius: 14px;
-    margin: 0.35rem 0;
+
+header[data-testid="stHeader"] {
+
+    height: 0rem !important;
+
+    min-height: 0rem !important;
+
 }
-.small-muted {font-size: 0.9rem; opacity: 0.82;}
+
+div[data-testid="stVerticalBlock"] {
+
+    gap: 0.5rem;
+
+}
+
 </style>
+
+<div style="
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 12px;
+
+    width: 100%;
+
+    margin: 0 0 8px 0;
+
+">
+
+    <div style="flex: 1; min-width: 0;">
+
+        <div style="font-size: 1.6rem; font-weight: 700; line-height: 1.2;">
+
+            📐 Interactive Absolute Value Explorer
+
+        </div>
+
+        <div style="font-size: 0.85rem; color: #888; margin-top: 4px;">
+
+            Explore, experiment, and master absolute value functions.
+
+        </div>
+
+    </div>
+
+    <div style="
+
+        flex: 0 0 auto;
+
+        text-align: right;
+
+        line-height: 1.25;
+
+        font-size: 0.8rem;
+
+    ">
+
+        <strong>Shirhan A. Biottong</strong><br>
+
+        <em>Algebra 1 Teacher</em><br>
+
+        <span style="font-size: 0.65rem; color: #888;">
+
+            Atlantic Coast High School
+
+        </span>
+
+    </div>
+
+</div>
+
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
@@ -71,22 +136,6 @@ if ac == 1:
 elif ac == -1:
     expr = -sp.Abs(X - hc) + kc
 expr = sp.simplify(expr)
-
-# ---------------------------------------------------------
-# HEADER
-# ---------------------------------------------------------
-left, right = st.columns([3, 1])
-with left:
-    st.title("📐 Interactive Absolute Value Explorer")
-    st.caption("Explore, experiment, and master absolute value functions.")
-with right:
-    st.markdown("""
-    <div style="text-align:right;line-height:1.1;font-size:0.8rem;">
-    <strong>Shirhan A. Biottong</strong><br>
-    <em>Algebra 1 Teacher</em><br>
-    <span style="font-size:0.7rem;">Atlantic Coast High School</span>
-    </div>
-    """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 # MAIN EXPLORER
