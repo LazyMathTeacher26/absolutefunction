@@ -275,8 +275,7 @@ plt.close(fig)
 # 5. STEP-BY-STEP CALCULATIONS
 # ---------------------------------
 st.subheader("3. Explore the mathematics")
-st.markdown("**Substitute the selected x-value**")
-st.latex(rf"y={a:g}|{x:g}-({h:g})|+({k:g})")
+
 
 st.markdown("**Simplified Equation**")
 
@@ -299,9 +298,10 @@ elif a_clean == -1:
 
 st.latex(rf"y={sp.latex(sp.simplify(expr))}")
 
+st.markdown("**Substitute the selected x-value**")
+st.latex(rf"y={a:g}|{x:g}-({h:g})|+({k:g})")
 
-
-st.markdown("**Calculate the answer**")
+st.markdown("**Calculate the y-value**")
 st.latex(rf"y={y:g}")
 
 # Display important properties
