@@ -203,3 +203,121 @@ with math_col:
         st.write(f"Range: y = {k:g}")
 
     st.caption("Domain: all real numbers.")
+
+
+# ---------------------------------
+# 6. GAMIFIED ABSOLUTE VALUE CHALLENGE
+# ---------------------------------
+st.markdown("---")
+st.subheader("🎮 Absolute Value Challenge: Become a Distance Detective!")
+
+st.caption(
+    "Remember: absolute value is distance from zero, "
+    "so the answer can never be negative."
+)
+
+# Initialize game state
+if "av_score" not in st.session_state:
+    st.session_state.av_score = 0
+
+if "av_question" not in st.session_state:
+    st.session_state.av_question = 0
+
+if "av_answered" not in st.session_state:
+    st.session_state.av_answered = False
+
+if "av_feedback" not in st.session_state:
+    st.session_state.av_feedback = ""
+
+if "av_target" not in st.session_state:
+    st.session_state.av_target = -7
+
+if "av_choices" not in st.session_state:
+    st.session_state.av_choices = [7, -7, 0, 14]
+
+# Compact game layout
+game_col, hint_col, score_col = st.columns([2, 1.5, 1])
+
+with game_col:
+    st.markdown("**🕵️ Mission: Find the distance!**")
+
+    target = st.session_state.av_target
+
+    st.latex(rf"\left|{target}\right|=?")
+
+    answer = st.radio(
+        "Choose your answer:",
+        options=st.session_state.av_choices,
+        key=f"av_choice_{st.session_state.av_question}",
+        horizontal=True,
+        label_visibility="collapsed",
+        disabled=st.session_state.av_answered
+    )
+
+    if not st.session_state.av_answered:
+        if st.button("🚀 Check Answer", key="av_check"):
+            st.session_state.av_answered = True
+
+            if answer == abs(target):
+                st.session_state.av_score += 10
+                st.session_state.av_feedback = (
+                    "✅ Correct! You earned 10 points!"
+                )
+            else:
+                st.session_state.av_feedback = (
+                    f"💡 Not quite! |{target}| = {abs(target)} "
+                    "because distance is nonnegative."
+                )
+            st.rerun()
+    else:
+        st.info(st.session_state.av_feedback)
+
+        if st.button("🎯 Next Challenge", key="av_next"):
+            questions = [-9, 6, -4, 12, -2, 0, 8, -11, 5]
+            next_index = (
+                st.session_state.av_question + 1
+            ) % len(questions)
+
+            st.session_state.av_question = next_index
+            new_target = questions[next_index]
+            st.session_state.av_target = new_target
+
+            correct = abs(new_target)
+            distractors = [
+                -correct,
+                correct + 2,
+                max(0, correct - 1)
+            ]
+
+            choices = list(dict.fromkeys(
+                [correct] + distractors
+            ))
+
+            while len(choices) < 4:
+                candidate = max(0, correct + len(choices) + 2)
+                if candidate not in choices:
+                    choices.append(candidate)
+
+            st.session_state.av_choices = choices[:4]
+            st.session_state.av_answered = False
+            st.session_state.av_feedback = ""
+            st.rerun()
+
+with hint_col:
+    st.markdown("**🧠 Detective Hint**")
+    st.write("Ask yourself: How far is the number from zero?")
+    st.write("Distance is always zero or positive.")
+
+with score_col:
+    st.markdown("**🏆 Score**")
+    st.metric("Points", st.session_state.av_score)
+    st.caption("10 points per correct answer")
+
+    if st.button("🔄 Reset Game", key="av_reset"):
+        st.session_state.av_score = 0
+        st.session_state.av_question = 0
+        st.session_state.av_target = -7
+        st.session_state.av_choices = [7, -7, 0, 14]
+        st.session_state.av_answered = False
+        st.session_state.av_feedback = ""
+        st.rerun()
