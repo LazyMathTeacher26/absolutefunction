@@ -76,14 +76,14 @@ with r1:
 
     x_min = st.number_input(
         "Minimum x",
-        value=-10.0,
+        value=-20.0,
         step=1.0,
         key="xmin"
     )
 
     x_max = st.number_input(
         "Maximum x",
-        value=10.0,
+        value=20.0,
         step=1.0,
         key="xmax"
     )
@@ -93,14 +93,14 @@ with r2:
 
     y_min = st.number_input(
         "Minimum y",
-        value=-10.0,
+        value=-20.0,
         step=1.0,
         key="ymin"
     )
 
     y_max = st.number_input(
         "Maximum y",
-        value=10.0,
+        value=20.0,
         step=1.0,
         key="ymax"
     )
