@@ -123,7 +123,6 @@ y = a * abs(x - h) + k
 # =========================================================
 graph_col, math_col = st.columns([1.8, 1], gap="small")
 with graph_col:
-    # Reduced points from 1000 to 400 for faster render speed
     xs = np.linspace(x_min, x_max, 400)
     ys = a * np.abs(xs - h) + k
     
@@ -133,7 +132,7 @@ with graph_col:
     ax.plot(xs, ys, color="#FF9D24", linewidth=3, label=r"$y=a\vert{}x-h\vert{}+k$")
     ax.axhline(0, color="white", linewidth=1.5)
     ax.axvline(0, color="white", linewidth=1.5)
-    ax.axvline(h, color="A3E635", linestyle=":", linewidth=2, label=f"Symmetry: x={h:g}")
+    ax.axvline(h, color="#A3E635", linestyle=":", linewidth=2, label=f"Symmetry: x={h:g}")
     ax.scatter(h, k, color="white", edgecolors="#E85D04", linewidths=2, s=90, zorder=5, label=f"Vertex ({h:g}, {k:g})")
     ax.scatter(x, y, color="#FFD43B", edgecolors="#211710", s=90, zorder=6, label=f"Point ({x:g}, {y:g})")
     ax.plot([x, x], [0, y], color="#FFD43B", linestyle="--", alpha=.8)
@@ -400,7 +399,6 @@ def render_game():
             
         st.latex(calculation_latex(q["a"], q["x"], q["h"], q["k"], q["y"]))
         
-        # Optimized render for answer review graph
         gx = np.linspace(q["h"] - 6, q["h"] + 6, 150)
         gy = q["a"] * np.abs(gx - q["h"]) + q["k"]
         fig, ax = plt.subplots(figsize=(7, 3.4))
