@@ -71,14 +71,14 @@ st.markdown(
     "to explore how **a**, **h**, and **k** change the function."
 )
 
-video_path = Path(__file__).parent / "AbsoluteValueParameter.mp4"
+video_path = Path(__file__).parent / "AbsoluteValueParameters.mp4"
 
 if video_path.is_file():
     st.video(str(video_path))
 else:
     st.warning(
         "Video not found. Please place "
-        "`AbsoluteValueParameter.mp4` in the same folder "
+        "`AbsoluteValueParameters.mp4` in the same folder "
         "as `streamlit_app.py`."
     )
 
